@@ -10,15 +10,22 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image as RLImage, PageBreak
 import tempfile, os
 
+# ------------------------------------------------------------
+# CONFIGURACIÓN INICIAL
+# ------------------------------------------------------------
 st.set_page_config(page_title="Checklist de Etiquetado Nutricional — 810/2021 y 2492/2022", layout="wide")
 st.title("Checklist de Etiquetado Nutricional — Resoluciones 810/2021 y 2492/2022 (Colombia)")
 
+# Introducción corta (definitiva)
 st.markdown(
     "> Este checklist se basa exclusivamente en las **Resoluciones 810 de 2021** y **2492 de 2022**, "
     "que establecen los requisitos técnicos para el **etiquetado nutricional y frontal de advertencia** en alimentos "
     "y bebidas envasadas destinados al consumo humano en Colombia."
 )
 
+# ------------------------------------------------------------
+# SIDEBAR: Datos de la verificación
+# ------------------------------------------------------------
 st.sidebar.header("Datos de la verificación")
 producto = st.sidebar.text_input("Nombre del producto")
 proveedor = st.sidebar.text_input("Proveedor / Fabricante")
@@ -30,6 +37,9 @@ invima_url = st.sidebar.text_input("URL de consulta INVIMA (opcional)")
 nombre_pdf = st.sidebar.text_input("Nombre del PDF (sin .pdf)", f"informe_810_2492_{datetime.now().strftime('%Y%m%d')}")
 solo_no = st.sidebar.checkbox("Mostrar solo 'No cumple'", value=False)
 
+# ------------------------------------------------------------
+# TABLA 17 — referencia
+# ------------------------------------------------------------
 TABLA_17 = [
     ("< 30 cm²", None),
     ("≥30 a <35 cm²", 1.7),
@@ -47,6 +57,9 @@ TABLA_17 = [
 ]
 df_tabla17 = pd.DataFrame(TABLA_17, columns=["Área de la cara principal", "Lado mínimo del sello (cm)"])
 
+# ------------------------------------------------------------
+# CHECKLIST — SOLO 810/2021 y 2492/2022 (orden definitivo v2)
+# ------------------------------------------------------------
 CATEGORIAS = {
     "1. Principios generales de etiquetado nutricional": [
         ("No inducir a error o confusión",
@@ -60,12 +73,15 @@ CATEGORIAS = {
         ("Unidades de medida (estructura general)",
          "La información debe declararse por 100 g o 100 mL y por porción (según estado físico), incluyendo número de porciones por envase cuando aplique.",
          "Res. 810/2021, Art. 12."),
-        ("Formato y tipografía",
-         "La tabla debe emplear tipografía **Arial o Helvetica**, en **negro** sobre **fondo blanco**, sin negrillas ni cursivas, con tamaño **≥ 8 pt** para envases con área principal hasta 100 cm² y proporcionalmente mayor para envases más grandes; conservar márgenes y proporciones sin imágenes ni logotipos dentro del recuadro.",
-         "Res. 810/2021, Art. 27 (27.1.3)."),
+        ("Macronutrientes obligatorios declarados",
+         "Confirmar que la tabla nutricional incluya los macronutrientes obligatorios: energía, proteínas, grasas totales, grasas saturadas, grasas trans, carbohidratos totales, azúcares totales y sodio.",
+         "Res. 810/2021, Art. 12 y Anexo 1."),
         ("Unidades específicas por nutriente",
-         "Energía: **kcal** (y/o kJ); Grasas totales/saturadas/trans: **g**; Carbohidratos totales/Azúcares: **g**; Proteínas: **g**; Sodio: **mg**; Vitaminas/minerales: unidades correspondientes (**µg RE**, **mg**, etc.).",
-         "Res. 810/2021, Art. 12."),
+         "Verificar que las unidades declaradas correspondan a lo exigido por la norma: Energía en kcal y/o kJ; Grasas totales y saturadas en g; **Grasas trans en mg**; Carbohidratos totales y azúcares en g; Proteínas en g; Sodio en mg; Calcio, Hierro y Zinc en mg; Vitamina A en µg RE; Vitamina C en mg; y otros micronutrientes según unidad del Anexo 1.",
+         "Res. 810/2021, Art. 12 y Anexo 1."),
+        ("Formato y tipografía",
+         "La tabla debe emplear tipografía Arial o Helvetica, en negro sobre fondo blanco, sin negrillas ni cursivas, con tamaño ≥ 8 pt para envases con área principal hasta 100 cm² y proporcionalmente mayor para envases más grandes; conservar márgenes y proporciones sin imágenes ni logotipos dentro del recuadro.",
+         "Res. 810/2021, Art. 27 (27.1.3)."),
         ("Verificación de calorías declaradas (±20% tolerancia)",
          "Comprobar que las calorías declaradas coinciden con las calculadas por macronutrientes (4 kcal/g CHO, 4 kcal/g proteínas, 9 kcal/g grasas). 💡 Use la herramienta a continuación para comprobarlo.",
          "Res. 810/2021, Art. 14 (Tolerancias)."),
@@ -82,17 +98,20 @@ CATEGORIAS = {
         ("Determinación de aplicabilidad de sellos",
          "Evaluar si corresponde ‘EXCESO EN’ (azúcares, grasas saturadas, grasas trans, sodio) o ‘CONTIENE EDULCORANTE’. 💡 Use la herramienta a continuación para determinar la aplicabilidad de sellos.",
          "Res. 810/2021, Art. 32 modificado por Res. 2492/2022."),
-        ("Ubicación y tamaño de sellos (Tabla 17)",
-         "Los sellos deben ubicarse en el **tercio superior** de la cara principal de exhibición y cumplir el tamaño mínimo según Tabla 17; para área > 300 cm² el lado es 15% del lado de la cara principal.",
-         "Res. 2492/2022 (Tabla 17) y Res. 810/2021, Art. 32."),
         ("Sello ‘Contiene edulcorante’",
          "Si el producto contiene edulcorantes (calóricos o no), debe incluirse el sello ‘Contiene edulcorante, no recomendable en niños’.",
          "Res. 2492/2022 (modifica Art. 32 Res. 810/2021)."),
+        ("Ubicación y tamaño de sellos (Tabla 17)",
+         "Los sellos deben ubicarse en el tercio superior de la cara principal de exhibición y cumplir el tamaño mínimo según Tabla 17; para área > 300 cm² el lado es 15% del lado de la cara principal.",
+         "Res. 2492/2022 (Tabla 17) y Res. 810/2021, Art. 32."),
     ],
 }
 
 APLICA = {k: "Producto terminado" for cat in CATEGORIAS.values() for (k,_,_) in cat}
 
+# ------------------------------------------------------------
+# ESTADO, NOTAS Y EVIDENCIA
+# ------------------------------------------------------------
 if "status_810" not in st.session_state:
     st.session_state.status_810 = {i[0]: "none" for c in CATEGORIAS.values() for i in c}
 if "note_810" not in st.session_state:
@@ -109,6 +128,9 @@ def split_observation_text(text: str, chunk: int = 100) -> str:
     parts = [s[i:i+chunk] for i in range(0, len(s), chunk)]
     return "\\n".join(parts)
 
+# ------------------------------------------------------------
+# RENDER DEL CHECKLIST (con herramientas integradas por ítem)
+# ------------------------------------------------------------
 st.header("Checklist por etapas")
 st.markdown("Responde con ✅ Cumple / ❌ No cumple / ⚪ No aplica. Si marcas **No cumple**, podrás **adjuntar evidencia**.")
 
@@ -124,6 +146,7 @@ for categoria, items in CATEGORIAS.items():
         st.markdown(f"**Referencia normativa:** {referencia}")
         st.markdown(f"**Aplica a:** {APLICA.get(titulo, 'Producto terminado')}")
 
+        # Botonera de estado
         c1, c2, c3, _ = st.columns([0.12, 0.12, 0.12, 0.64])
         with c1:
             if st.button("✅ Cumple", key=f"{titulo}_yes"):
@@ -135,6 +158,7 @@ for categoria, items in CATEGORIAS.items():
             if st.button("⚪ No aplica", key=f"{titulo}_na"):
                 st.session_state.status_810[titulo] = "na"
 
+        # Estado visual
         estado = st.session_state.status_810[titulo]
         if estado == "yes":
             st.markdown("<div style='background:#e6ffed;padding:6px;border-radius:5px;'>✅ Cumple</div>", unsafe_allow_html=True)
@@ -145,7 +169,7 @@ for categoria, items in CATEGORIAS.items():
         else:
             st.markdown("<div style='background:#fff;padding:6px;border-radius:5px;'>Sin responder</div>", unsafe_allow_html=True)
 
-        # Herramienta: calorías declaradas
+        # Herramientas integradas
         if titulo == "Verificación de calorías declaradas (±20% tolerancia)":
             st.markdown("<div style='background:#e6f0ff;padding:10px;border-radius:8px;'><b>Herramienta:</b> Verifique el valor energético declarado vs calculado.</div>", unsafe_allow_html=True)
             colA, colB = st.columns(2)
@@ -169,7 +193,6 @@ for categoria, items in CATEGORIAS.items():
                 else:
                     st.info("Ingrese calorías declaradas para evaluar la diferencia.")
 
-        # Herramienta: aplicabilidad de sellos
         if titulo == "Determinación de aplicabilidad de sellos":
             st.markdown("<div style='background:#e6f0ff;padding:10px;border-radius:8px;'><b>Herramienta:</b> Determine si aplican sellos de advertencia.</div>", unsafe_allow_html=True)
             col1, col2 = st.columns([0.6, 0.4])
@@ -178,16 +201,19 @@ for categoria, items in CATEGORIAS.items():
                 kcal = st.number_input("Calorías (kcal)", min_value=0.0, value=200.0, step=1.0, key="sello_kcal")
                 azuc_tot = st.number_input("Azúcares totales (g)", min_value=0.0, value=10.0, step=0.1, key="sello_azu")
                 grasa_sat = st.number_input("Grasa saturada (g)", min_value=0.0, value=2.0, step=0.1, key="sello_sat")
-                grasa_trans = st.number_input("Grasa trans (g)", min_value=0.0, value=0.0, step=0.05, key="sello_trans")
+                grasa_trans = st.number_input("Grasa trans (mg)", min_value=0.0, value=0.0, step=1.0, key="sello_trans_mg")
                 sodio_mg = st.number_input("Sodio (mg)", min_value=0.0, value=300.0, step=5.0, key="sello_sod")
                 bebida_sin_energia = False
                 if "Líquido" in estado_fisico:
                     bebida_sin_energia = st.checkbox("¿Bebida sin aporte energético? (0 kcal por 100 mL)", value=False, key="sello_bebida0")
             with col2:
+                # Recalcular en base a unidades corregidas (trans en mg)
                 kcal_azu_tot = 4.0 * azuc_tot
                 pct_azu = 100.0 * kcal_azu_tot / kcal if kcal > 0 else 0.0
                 pct_sat = 100.0 * (9.0 * grasa_sat) / kcal if kcal > 0 else 0.0
-                pct_trans = 100.0 * (9.0 * grasa_trans) / kcal if kcal > 0 else 0.0
+                # Para trans en mg -> convertir a g antes de kcal
+                grasa_trans_g = grasa_trans / 1000.0
+                pct_trans = 100.0 * (9.0 * grasa_trans_g) / kcal if kcal > 0 else 0.0
 
                 criterio_sodio_a = (kcal > 0 and (sodio_mg / max(kcal, 1.0)) >= 1.0)
                 if "Sólido" in estado_fisico:
@@ -206,9 +232,8 @@ for categoria, items in CATEGORIAS.items():
                 else:
                     st.error("⚠️ Debe llevar sello(s): " + ", ".join(sellos))
 
-                st.caption("Umbrales: azúcares ≥10% kcal; saturadas ≥10%; trans ≥1%; sodio ≥1 mg/kcal o ≥300 mg/100 g (sólidos) y ≥40 mg/100 mL (bebidas sin energía).")
+                st.caption("Umbrales: azúcares ≥10% kcal; saturadas ≥10%; trans ≥1% kcal; sodio ≥1 mg/kcal o ≥300 mg/100 g (sólidos) y ≥40 mg/100 mL (bebidas sin energía).")
 
-        # Herramienta: Tabla 17
         if titulo == "Ubicación y tamaño de sellos (Tabla 17)":
             st.markdown("<div style='background:#e6f0ff;padding:10px;border-radius:8px;'><b>Herramienta:</b> Consulte la Tabla 17 y calcule el tamaño mínimo del sello.</div>", unsafe_allow_html=True)
             st.dataframe(df_tabla17, use_container_width=True)
@@ -266,7 +291,9 @@ for categoria, items in CATEGORIAS.items():
 
         st.markdown("---")
 
-# Métricas
+# ------------------------------------------------------------
+# MÉTRICAS
+# ------------------------------------------------------------
 yes_count = sum(1 for v in st.session_state.status_810.values() if v == "yes")
 no_count = sum(1 for v in st.session_state.status_810.values() if v == "no")
 answered_count = yes_count + no_count
@@ -278,7 +305,9 @@ st.write(
     f"SIN RESPONDER: {sum(1 for v in st.session_state.status_810.values() if v == 'none')}"
 )
 
-# PDF
+# ------------------------------------------------------------
+# PDF (A4 horizontal) — incluye referencias y evidencias
+# ------------------------------------------------------------
 def split_observation_text_pdf(text: str, chunk: int = 100) -> str:
     if not text:
         return ""
@@ -332,6 +361,7 @@ def generar_pdf(df: pd.DataFrame):
     story.append(Paragraph(f"<b>Cumplimiento (sobre ítems contestados):</b> {pct}%", style_header))
     story.append(Spacer(1, 4*mm))
 
+    # Armar DataFrame con referencias
     rows = []
     for items in CATEGORIAS.values():
         for (titulo, _, referencia) in items:
@@ -375,11 +405,13 @@ def generar_pdf(df: pd.DataFrame):
     ]))
     story.append(tbl)
 
+    # Evidencia fotográfica
     any_ev = any(len(v)>0 for v in st.session_state.evidence_810.values())
     if any_ev:
         story.append(PageBreak())
         story.append(Paragraph("<b>Evidencia fotográfica</b>", style_header))
         story.append(Spacer(1, 3*mm))
+
         with tempfile.TemporaryDirectory() as tmpdir:
             for titulo, ev_list in st.session_state.evidence_810.items():
                 if not ev_list:
@@ -401,10 +433,11 @@ def generar_pdf(df: pd.DataFrame):
     buf.seek(0)
     return buf
 
-# Exportar
+# ------------------------------------------------------------
+# EXPORTAR PDF
+# ------------------------------------------------------------
 st.subheader("Generar informe PDF (A4 horizontal)")
 if st.button("Generar PDF"):
-    # Construir df de salida para PDF
     rows_out = []
     for items in CATEGORIAS.values():
         for (titulo, _, referencia) in items:
@@ -422,6 +455,7 @@ if st.button("Generar PDF"):
                 "Referencia": referencia
             })
     df_out = pd.DataFrame(rows_out, columns=["Ítem", "Estado", "Observación", "Referencia"])
+
     pdf_buffer = generar_pdf(df_out)
     file_name = (nombre_pdf.strip() or f"informe_810_2492_{datetime.now().strftime('%Y%m%d')}") + ".pdf"
     st.download_button("Descargar PDF", data=pdf_buffer, file_name=file_name, mime="application/pdf")
