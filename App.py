@@ -8,7 +8,7 @@ from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib import colors
 from reportlab.lib.units import mm
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image as RLImage, PageBreak
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak, Image as RLPlatypusImage
 from reportlab.lib.utils import ImageReader
 
 # ------------------------------------------------------------
@@ -17,11 +17,12 @@ from reportlab.lib.utils import ImageReader
 st.set_page_config(page_title="Checklist de Etiquetado Nutricional — 810/2021 y 2492/2022", layout="wide")
 st.title("Checklist de Etiquetado Nutricional — Resoluciones 810/2021 y 2492/2022 (Colombia)")
 
-# Introducción corta (definitiva)
+# Introducción (se mantiene extensa para claridad)
 st.markdown(
     "> Este checklist se basa exclusivamente en las **Resoluciones 810 de 2021** y **2492 de 2022**, "
-    "que establecen los requisitos técnicos para el **etiquetado nutricional y frontal de advertencia** en alimentos "
-    "y bebidas envasadas destinados al consumo humano en Colombia."
+    "que establecen los requisitos técnicos para el **etiquetado nutricional** y el **etiquetado frontal de advertencia** "
+    "en alimentos y bebidas envasadas destinados al consumo humano en Colombia. Se incluyen herramientas interactivas "
+    "para verificación de calorías, aplicabilidad de sellos y tamaño mínimo según Tabla 17."
 )
 
 # ------------------------------------------------------------
@@ -39,7 +40,7 @@ nombre_pdf = st.sidebar.text_input("Nombre del PDF (sin .pdf)", f"informe_810_24
 solo_no = st.sidebar.checkbox("Mostrar solo 'No cumple'", value=False)
 
 # ------------------------------------------------------------
-# TABLA 17 — referencia
+# TABLA 17 — referencia (informativa en pantalla)
 # ------------------------------------------------------------
 TABLA_17 = [
     ("< 30 cm²", None),
@@ -59,7 +60,7 @@ TABLA_17 = [
 df_tabla17 = pd.DataFrame(TABLA_17, columns=["Área de la cara principal", "Lado mínimo del sello (cm)"])
 
 # ------------------------------------------------------------
-# CHECKLIST — SOLO 810/2021 y 2492/2022 (orden definitivo)
+# CHECKLIST — SOLO 810/2021 y 2492/2022 (orden amplio)
 # ------------------------------------------------------------
 CATEGORIAS = {
     "1. Principios generales de etiquetado nutricional": [
@@ -111,14 +112,13 @@ CATEGORIAS = {
 APLICA = {k: "Producto terminado" for cat in CATEGORIAS.values() for (k,_,_) in cat}
 
 # ------------------------------------------------------------
-# ESTADO, NOTAS Y EVIDENCIA (persistente en base64)
+# ESTADO, NOTAS Y EVIDENCIA (persistente con base64)
 # ------------------------------------------------------------
 if "status_810" not in st.session_state:
     st.session_state.status_810 = {i[0]: "none" for c in CATEGORIAS.values() for i in c}
 if "note_810" not in st.session_state:
     st.session_state.note_810 = {i[0]: "" for c in CATEGORIAS.values() for i in c}
 if "evidence_810" not in st.session_state:
-    # cada ítem -> lista de dicts: {"name":..., "base64":..., "caption":...}
     st.session_state.evidence_810 = {i[0]: [] for c in CATEGORIAS.values() for i in c}
 
 def split_observation_text(text: str, chunk: int = 100) -> str:
@@ -171,7 +171,7 @@ for categoria, items in CATEGORIAS.items():
         else:
             st.markdown("<div style='background:#fff;padding:6px;border-radius:5px;'>Sin responder</div>", unsafe_allow_html=True)
 
-        # Herramientas integradas (con fondo azul suave)
+        # Herramientas integradas (cuadros azul #e6f0ff)
         if titulo == "Verificación de calorías declaradas (±20% tolerancia)":
             st.markdown("<div style='background:#e6f0ff;padding:10px;border-radius:8px;'><b>Herramienta:</b> Verifique el valor energético declarado vs calculado.</div>", unsafe_allow_html=True)
             colA, colB = st.columns(2)
@@ -307,7 +307,7 @@ st.write(
 )
 
 # ------------------------------------------------------------
-# PDF (A4 horizontal) — incluye referencias y evidencias con encabezados
+# PDF (A4 horizontal) — incluye referencias y evidencias (página nueva)
 # ------------------------------------------------------------
 def split_observation_text_pdf(text: str, chunk: int = 100) -> str:
     if not text:
@@ -377,10 +377,10 @@ def generar_pdf():
             if obs != "-":
                 obs = split_observation_text_pdf(obs, chunk=100)
             data.append([
-                Paragraph(str(titulo),    style_cell),
-                Paragraph(str(estado_humano), style_cell),
-                Paragraph(obs,            style_cell),
-                Paragraph(str(referencia),style_cell),
+                Paragraph(str(titulo),          style_cell),
+                Paragraph(str(estado_humano),   style_cell),
+                Paragraph(obs,                  style_cell),
+                Paragraph(str(referencia),      style_cell),
             ])
 
     col_widths = [100*mm, 25*mm, 85*mm, 55*mm]
@@ -396,7 +396,7 @@ def generar_pdf():
     ]))
     story.append(tbl)
 
-    # Página nueva para evidencias
+    # Página nueva para evidencias (Imagen desde memoria: ImageReader + Image)
     any_ev = any(len(v) > 0 for v in st.session_state.evidence_810.values())
     if any_ev:
         story.append(PageBreak())
@@ -406,16 +406,14 @@ def generar_pdf():
         for titulo, ev_list in st.session_state.evidence_810.items():
             if not ev_list:
                 continue
-            # Encabezados solicitados
             story.append(Paragraph(f"<b>Ítem:</b> {titulo}", style_header))
             story.append(Paragraph("<b>Evidencia de incumplimiento:</b>", style_header))
             story.append(Spacer(1, 2*mm))
-            # Imágenes desde base64 (persistentes)
             for idx, ev in enumerate(ev_list):
                 try:
                     img_bytes = base64.b64decode(ev["base64"])
                     img_reader = ImageReader(BytesIO(img_bytes))
-                    story.append(RLImage(img_reader, width=85*mm, height=55*mm))
+                    story.append(RLPlatypusImage(img_reader, width=85*mm, height=55*mm))
                     if ev.get("caption"):
                         story.append(Paragraph(ev["caption"], style_cell))
                     story.append(Spacer(1, 3*mm))
