@@ -8,6 +8,7 @@ from reportlab.lib import colors
 from reportlab.lib.units import mm
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image as RLImage, PageBreak
+from reportlab.lib.utils import ImageReader
 import tempfile, os
 
 # ------------------------------------------------------------
@@ -58,7 +59,7 @@ TABLA_17 = [
 df_tabla17 = pd.DataFrame(TABLA_17, columns=["Área de la cara principal", "Lado mínimo del sello (cm)"])
 
 # ------------------------------------------------------------
-# CHECKLIST — SOLO 810/2021 y 2492/2022 (orden definitivo v2)
+# CHECKLIST — SOLO 810/2021 y 2492/2022 (orden definitivo v3)
 # ------------------------------------------------------------
 CATEGORIAS = {
     "1. Principios generales de etiquetado nutricional": [
@@ -169,7 +170,7 @@ for categoria, items in CATEGORIAS.items():
         else:
             st.markdown("<div style='background:#fff;padding:6px;border-radius:5px;'>Sin responder</div>", unsafe_allow_html=True)
 
-        # Herramientas integradas
+        # Herramientas integradas (con fondo azul suave)
         if titulo == "Verificación de calorías declaradas (±20% tolerancia)":
             st.markdown("<div style='background:#e6f0ff;padding:10px;border-radius:8px;'><b>Herramienta:</b> Verifique el valor energético declarado vs calculado.</div>", unsafe_allow_html=True)
             colA, colB = st.columns(2)
@@ -207,11 +208,9 @@ for categoria, items in CATEGORIAS.items():
                 if "Líquido" in estado_fisico:
                     bebida_sin_energia = st.checkbox("¿Bebida sin aporte energético? (0 kcal por 100 mL)", value=False, key="sello_bebida0")
             with col2:
-                # Recalcular en base a unidades corregidas (trans en mg)
                 kcal_azu_tot = 4.0 * azuc_tot
                 pct_azu = 100.0 * kcal_azu_tot / kcal if kcal > 0 else 0.0
                 pct_sat = 100.0 * (9.0 * grasa_sat) / kcal if kcal > 0 else 0.0
-                # Para trans en mg -> convertir a g antes de kcal
                 grasa_trans_g = grasa_trans / 1000.0
                 pct_trans = 100.0 * (9.0 * grasa_trans_g) / kcal if kcal > 0 else 0.0
 
@@ -317,7 +316,7 @@ def split_observation_text_pdf(text: str, chunk: int = 100) -> str:
     parts = [s[i:i+chunk] for i in range(0, len(s), chunk)]
     return "\\n".join(parts)
 
-def generar_pdf(df: pd.DataFrame):
+def generar_pdf():
     buf = BytesIO()
     doc = SimpleDocTemplate(
         buf,
@@ -361,8 +360,8 @@ def generar_pdf(df: pd.DataFrame):
     story.append(Paragraph(f"<b>Cumplimiento (sobre ítems contestados):</b> {pct}%", style_header))
     story.append(Spacer(1, 4*mm))
 
-    # Armar DataFrame con referencias
-    rows = []
+    # Tabla principal (Ítem, Estado, Observación, Referencia)
+    data = [["Ítem", "Estado", "Observación", "Referencia"]]
     for items in CATEGORIAS.values():
         for (titulo, _, referencia) in items:
             estado_val = st.session_state.status_810.get(titulo, "none")
@@ -372,25 +371,15 @@ def generar_pdf(df: pd.DataFrame):
                 else "No aplica" if estado_val == "na"
                 else "Sin responder"
             )
-            rows.append({
-                "Ítem": titulo,
-                "Estado": estado_humano,
-                "Observación": st.session_state.note_810.get(titulo, ""),
-                "Referencia": referencia
-            })
-    df_pdf = pd.DataFrame(rows, columns=["Ítem", "Estado", "Observación", "Referencia"])
-
-    data = [["Ítem", "Estado", "Observación", "Referencia"]]
-    for _, r in df_pdf.iterrows():
-        obs = r["Observación"] or "-"
-        if obs != "-":
-            obs = split_observation_text_pdf(obs, chunk=100)
-        data.append([
-            Paragraph(str(r["Ítem"]),          style_cell),
-            Paragraph(str(r["Estado"]),        style_cell),
-            Paragraph(obs,                     style_cell),
-            Paragraph(str(r["Referencia"]),    style_cell),
-        ])
+            obs = st.session_state.note_810.get(titulo, "") or "-"
+            if obs != "-":
+                obs = split_observation_text_pdf(obs, chunk=100)
+            data.append([
+                Paragraph(str(titulo),    style_cell),
+                Paragraph(str(estado_humano), style_cell),
+                Paragraph(obs,            style_cell),
+                Paragraph(str(referencia),style_cell),
+            ])
 
     col_widths = [100*mm, 25*mm, 85*mm, 55*mm]
     tbl = Table(data, colWidths=col_widths, repeatRows=1)
@@ -405,29 +394,31 @@ def generar_pdf(df: pd.DataFrame):
     ]))
     story.append(tbl)
 
-    # Evidencia fotográfica
-    any_ev = any(len(v)>0 for v in st.session_state.evidence_810.values())
+    # Página nueva para evidencias
+    any_ev = any(len(v) > 0 for v in st.session_state.evidence_810.values())
     if any_ev:
         story.append(PageBreak())
         story.append(Paragraph("<b>Evidencia fotográfica</b>", style_header))
         story.append(Spacer(1, 3*mm))
 
-        with tempfile.TemporaryDirectory() as tmpdir:
-            for titulo, ev_list in st.session_state.evidence_810.items():
-                if not ev_list:
-                    continue
-                story.append(Paragraph(f"<b>Ítem:</b> {titulo}", style_header))
-                story.append(Spacer(1, 2*mm))
-                for idx, ev in enumerate(ev_list):
-                    img_path = os.path.join(tmpdir, f"ev_{hash(titulo)}_{idx}.png")
-                    with open(img_path, "wb") as f:
-                        f.write(ev["bytes"])
-                    img = RLImage(img_path, width=85*mm, height=55*mm)
-                    story.append(img)
+        for titulo, ev_list in st.session_state.evidence_810.items():
+            if not ev_list:
+                continue
+            # Encabezados solicitados
+            story.append(Paragraph(f"<b>Ítem:</b> {titulo}", style_header))
+            story.append(Paragraph("<b>Evidencia de incumplimiento:</b>", style_header))
+            story.append(Spacer(1, 2*mm))
+            # Imágenes desde bytes (sin archivos temporales)
+            for idx, ev in enumerate(ev_list):
+                try:
+                    img_reader = ImageReader(BytesIO(ev["bytes"]))
+                    story.append(RLImage(img_reader, width=85*mm, height=55*mm))
                     if ev.get("caption"):
                         story.append(Paragraph(ev["caption"], style_cell))
                     story.append(Spacer(1, 3*mm))
-                story.append(Spacer(1, 5*mm))
+                except Exception as e:
+                    story.append(Paragraph(f"<i>⚠️ Error al cargar imagen {ev.get('name', '')}: {e}</i>", style_cell))
+            story.append(Spacer(1, 5*mm))
 
     doc.build(story)
     buf.seek(0)
@@ -438,24 +429,6 @@ def generar_pdf(df: pd.DataFrame):
 # ------------------------------------------------------------
 st.subheader("Generar informe PDF (A4 horizontal)")
 if st.button("Generar PDF"):
-    rows_out = []
-    for items in CATEGORIAS.values():
-        for (titulo, _, referencia) in items:
-            estado_val = st.session_state.status_810.get(titulo, "none")
-            estado_humano = (
-                "Cumple" if estado_val == "yes"
-                else "No cumple" if estado_val == "no"
-                else "No aplica" if estado_val == "na"
-                else "Sin responder"
-            )
-            rows_out.append({
-                "Ítem": titulo,
-                "Estado": estado_humano,
-                "Observación": st.session_state.note_810.get(titulo, ""),
-                "Referencia": referencia
-            })
-    df_out = pd.DataFrame(rows_out, columns=["Ítem", "Estado", "Observación", "Referencia"])
-
-    pdf_buffer = generar_pdf(df_out)
+    pdf_buffer = generar_pdf()
     file_name = (nombre_pdf.strip() or f"informe_810_2492_{datetime.now().strftime('%Y%m%d')}") + ".pdf"
     st.download_button("Descargar PDF", data=pdf_buffer, file_name=file_name, mime="application/pdf")
