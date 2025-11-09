@@ -1,6 +1,7 @@
 
 import streamlit as st
 import pandas as pd
+import base64
 from io import BytesIO
 from datetime import datetime
 from reportlab.lib.pagesizes import A4, landscape
@@ -9,7 +10,6 @@ from reportlab.lib.units import mm
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image as RLImage, PageBreak
 from reportlab.lib.utils import ImageReader
-import tempfile, os
 
 # ------------------------------------------------------------
 # CONFIGURACIÓN INICIAL
@@ -59,7 +59,7 @@ TABLA_17 = [
 df_tabla17 = pd.DataFrame(TABLA_17, columns=["Área de la cara principal", "Lado mínimo del sello (cm)"])
 
 # ------------------------------------------------------------
-# CHECKLIST — SOLO 810/2021 y 2492/2022 (orden definitivo v3)
+# CHECKLIST — SOLO 810/2021 y 2492/2022 (orden definitivo)
 # ------------------------------------------------------------
 CATEGORIAS = {
     "1. Principios generales de etiquetado nutricional": [
@@ -111,13 +111,14 @@ CATEGORIAS = {
 APLICA = {k: "Producto terminado" for cat in CATEGORIAS.values() for (k,_,_) in cat}
 
 # ------------------------------------------------------------
-# ESTADO, NOTAS Y EVIDENCIA
+# ESTADO, NOTAS Y EVIDENCIA (persistente en base64)
 # ------------------------------------------------------------
 if "status_810" not in st.session_state:
     st.session_state.status_810 = {i[0]: "none" for c in CATEGORIAS.values() for i in c}
 if "note_810" not in st.session_state:
     st.session_state.note_810 = {i[0]: "" for c in CATEGORIAS.values() for i in c}
 if "evidence_810" not in st.session_state:
+    # cada ítem -> lista de dicts: {"name":..., "base64":..., "caption":...}
     st.session_state.evidence_810 = {i[0]: [] for c in CATEGORIAS.values() for i in c}
 
 def split_observation_text(text: str, chunk: int = 100) -> str:
@@ -276,7 +277,7 @@ for categoria, items in CATEGORIAS.items():
                     for f in files:
                         st.session_state.evidence_810[titulo].append({
                             "name": f.name,
-                            "bytes": f.read(),
+                            "base64": base64.b64encode(f.read()).decode("utf-8"),
                             "caption": caption or ""
                         })
                     st.success(f"Se agregaron {len(files)} imagen(es) a: {titulo}")
@@ -285,8 +286,9 @@ for categoria, items in CATEGORIAS.items():
                 st.markdown("**Evidencia acumulada:**")
                 cols = st.columns(4)
                 for idx, ev in enumerate(ev_list):
+                    img_bytes = base64.b64decode(ev["base64"])
                     with cols[idx % 4]:
-                        st.image(ev["bytes"], caption=ev["caption"] or ev["name"], use_column_width=True)
+                        st.image(img_bytes, caption=ev["caption"] or ev["name"], use_column_width=True)
 
         st.markdown("---")
 
@@ -305,7 +307,7 @@ st.write(
 )
 
 # ------------------------------------------------------------
-# PDF (A4 horizontal) — incluye referencias y evidencias
+# PDF (A4 horizontal) — incluye referencias y evidencias con encabezados
 # ------------------------------------------------------------
 def split_observation_text_pdf(text: str, chunk: int = 100) -> str:
     if not text:
@@ -408,10 +410,11 @@ def generar_pdf():
             story.append(Paragraph(f"<b>Ítem:</b> {titulo}", style_header))
             story.append(Paragraph("<b>Evidencia de incumplimiento:</b>", style_header))
             story.append(Spacer(1, 2*mm))
-            # Imágenes desde bytes (sin archivos temporales)
+            # Imágenes desde base64 (persistentes)
             for idx, ev in enumerate(ev_list):
                 try:
-                    img_reader = ImageReader(BytesIO(ev["bytes"]))
+                    img_bytes = base64.b64decode(ev["base64"])
+                    img_reader = ImageReader(BytesIO(img_bytes))
                     story.append(RLImage(img_reader, width=85*mm, height=55*mm))
                     if ev.get("caption"):
                         story.append(Paragraph(ev["caption"], style_cell))
