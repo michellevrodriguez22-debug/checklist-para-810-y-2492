@@ -9,7 +9,6 @@ from reportlab.lib import colors
 from reportlab.lib.units import mm
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak, Image as RLPlatypusImage
-from reportlab.lib.utils import ImageReader
 
 # ------------------------------------------------------------
 # CONFIGURACIÓN INICIAL
@@ -17,7 +16,7 @@ from reportlab.lib.utils import ImageReader
 st.set_page_config(page_title="Checklist de Etiquetado Nutricional — 810/2021 y 2492/2022", layout="wide")
 st.title("Checklist de Etiquetado Nutricional — Resoluciones 810/2021 y 2492/2022 (Colombia)")
 
-# Introducción (se mantiene extensa para claridad)
+# Introducción (extendida)
 st.markdown(
     "> Este checklist se basa exclusivamente en las **Resoluciones 810 de 2021** y **2492 de 2022**, "
     "que establecen los requisitos técnicos para el **etiquetado nutricional** y el **etiquetado frontal de advertencia** "
@@ -60,7 +59,7 @@ TABLA_17 = [
 df_tabla17 = pd.DataFrame(TABLA_17, columns=["Área de la cara principal", "Lado mínimo del sello (cm)"])
 
 # ------------------------------------------------------------
-# CHECKLIST — SOLO 810/2021 y 2492/2022 (orden amplio)
+# CHECKLIST — 810/2021 y 2492/2022 (orden completo)
 # ------------------------------------------------------------
 CATEGORIAS = {
     "1. Principios generales de etiquetado nutricional": [
@@ -396,7 +395,7 @@ def generar_pdf():
     ]))
     story.append(tbl)
 
-    # Página nueva para evidencias (Imagen desde memoria: ImageReader + Image)
+    # Página nueva para evidencias — FIX definitivo: BytesIO directo en RLPlatypusImage
     any_ev = any(len(v) > 0 for v in st.session_state.evidence_810.values())
     if any_ev:
         story.append(PageBreak())
@@ -412,8 +411,8 @@ def generar_pdf():
             for idx, ev in enumerate(ev_list):
                 try:
                     img_bytes = base64.b64decode(ev["base64"])
-                    img_reader = ImageReader(BytesIO(img_bytes))
-                    story.append(RLPlatypusImage(img_reader, width=85*mm, height=55*mm))
+                    # 👇 FIX: pasar BytesIO(img_bytes) directo a Image (no usar ImageReader)
+                    story.append(RLPlatypusImage(BytesIO(img_bytes), width=85*mm, height=55*mm))
                     if ev.get("caption"):
                         story.append(Paragraph(ev["caption"], style_cell))
                     story.append(Spacer(1, 3*mm))
