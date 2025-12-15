@@ -18,10 +18,9 @@ st.title("Checklist de Etiquetado Nutricional — Resoluciones 810/2021 y 2492/2
 
 # Introducción (extendida)
 st.markdown(
-    "> Este checklist se basa exclusivamente en las **Resoluciones 810 de 2021** y **2492 de 2022**, "
+    "> Este checklist se basa en las **Resoluciones 810 de 2021** y **2492 de 2022**, "
     "que establecen los requisitos técnicos para el **etiquetado nutricional** y el **etiquetado frontal de advertencia** "
-    "en alimentos y bebidas envasadas destinados al consumo humano en Colombia. Se incluyen herramientas interactivas "
-    "para verificación de calorías, aplicabilidad de sellos y tamaño mínimo según Tabla 17."
+    "en alimentos y bebidas envasadas destinados al consumo humano en Colombia."
 )
 
 # ------------------------------------------------------------
