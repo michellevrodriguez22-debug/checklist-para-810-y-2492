@@ -64,46 +64,46 @@ CATEGORIAS = {
     "1. Principios generales de etiquetado nutricional": [
         ("No inducir a error o confusión",
          "Verificar que el etiquetado nutricional y cualquier información asociada no atribuyan propiedades que no posea, ni induzcan a error sobre composición, cantidad o beneficios.",
-         "Res. 810/2021, Art. 4 y Art. 25."),
+         "Res. 810/2021, Art. 5."),
         ("Tabla nutricional obligatoria (aplicabilidad)",
          "Confirmar que el producto destinado al consumidor final incluya la tabla nutricional, salvo exenciones previstas en la norma.",
-         "Res. 810/2021, Art. 8–10."),
+         "Res. 810/2021, Art. 6."),
     ],
     "2. Estructura y contenido de la tabla nutricional": [
         ("Unidades de medida (estructura general)",
-         "La información debe declararse por 100 g o 100 mL y por porción (según estado físico), incluyendo número de porciones por envase cuando aplique.",
-         "Res. 810/2021, Art. 12."),
+         "La información debe declararse por 100 g o 100 mL y por porción (según estado físico), incluyendo número de porciones por envase",
+         "Res. 810/2021, Art. 7 y 8."),
         ("Macronutrientes obligatorios declarados",
          "Confirmar que la tabla nutricional incluya los macronutrientes obligatorios: energía, proteínas, grasas totales, grasas saturadas, grasas trans, carbohidratos totales, azúcares totales y sodio.",
-         "Res. 810/2021, Art. 12 y Anexo 1."),
+         "Res. 810/2021, Art. 8.1.1"),
         ("Unidades específicas por nutriente",
-         "Verificar que las unidades declaradas correspondan a lo exigido por la norma: Energía en kcal y/o kJ; Grasas totales y saturadas en g; **Grasas trans en mg**; Carbohidratos totales y azúcares en g; Proteínas en g; Sodio en mg; Calcio, Hierro y Zinc en mg; Vitamina A en µg RE; Vitamina C en mg; y otros micronutrientes según unidad del Anexo 1.",
-         "Res. 810/2021, Art. 12 y Anexo 1."),
+         "Verificar que las unidades declaradas correspondan a lo exigido por la norma: Energía en kcal y/o kJ; Grasas totales y saturadas en g; **Grasas trans en mg**; Carbohidratos totales y azúcares en g; Proteínas en g; Sodio en mg; Calcio, Hierro y Zinc en mg; Vitamina A en µg RE; Vitamina C en mg; y otros micronutrientes.",
+         "Res. 810/2021, Art. 8"),
         ("Formato y tipografía",
          "La tabla debe emplear tipografía Arial o Helvetica, en negro sobre fondo blanco, sin negrillas ni cursivas, con tamaño ≥ 8 pt para envases con área principal hasta 100 cm² y proporcionalmente mayor para envases más grandes; conservar márgenes y proporciones sin imágenes ni logotipos dentro del recuadro.",
-         "Res. 810/2021, Art. 27 (27.1.3)."),
+         "Res. 810/2021, Art. 9.1, 9.2 y 9.5"),
         ("Verificación de calorías declaradas (±20% tolerancia)",
          "Comprobar que las calorías declaradas coinciden con las calculadas por macronutrientes (4 kcal/g CHO, 4 kcal/g proteínas, 9 kcal/g grasas). 💡 Use la herramienta a continuación para comprobarlo.",
-         "Res. 810/2021, Art. 14 (Tolerancias)."),
+         "Res. 810/2021, Art. 17 (Tolerancias)."),
         ("Consistencia con análisis bromatológico (±20%)",
          "Verificar que los valores declarados en la tabla nutricional coinciden con el análisis bromatológico dentro de ±20%; usar resultados de laboratorio acreditado/certificado.",
-         "Res. 810/2021, Art. 14 (Tolerancias)."),
+         "Res. 810/2021, Art. 17 (Tolerancias)."),
     ],
     "3. Declaraciones nutricionales y de salud": [
         ("Declaraciones permitidas y consistentes",
          "Permitir únicamente declaraciones nutricionales/de salud autorizadas, veraces y sustentadas; no deben contradecir la presencia de sellos de advertencia.",
-         "Res. 810/2021, Art. 25."),
+         "Res. 810/2021, Art. 21 y 20."),
     ],
     "4. Sellos frontales de advertencia": [
         ("Determinación de aplicabilidad de sellos",
          "Evaluar si corresponde ‘EXCESO EN’ (azúcares, grasas saturadas, grasas trans, sodio) o ‘CONTIENE EDULCORANTE’. 💡 Use la herramienta a continuación para determinar la aplicabilidad de sellos.",
-         "Res. 810/2021, Art. 32 modificado por Res. 2492/2022."),
+         "Res. 810/2021, Art. 25 y tabla 3, modificado por Res. 2492/2022."),
         ("Sello ‘Contiene edulcorante’",
          "Si el producto contiene edulcorantes (calóricos o no), debe incluirse el sello ‘Contiene edulcorante, no recomendable en niños’.",
-         "Res. 2492/2022 (modifica Art. 32 Res. 810/2021)."),
+         "Res. 2492/2022 (modifica Art. 27 Res. 810/2021)."),
         ("Ubicación y tamaño de sellos (Tabla 17)",
          "Los sellos deben ubicarse en el tercio superior de la cara principal de exhibición y cumplir el tamaño mínimo según Tabla 17; para área > 300 cm² el lado es 15% del lado de la cara principal.",
-         "Res. 2492/2022 (Tabla 17) y Res. 810/2021, Art. 32."),
+         "Res. 2492/202 modifica a Res. 810/2021, Art. 27"),
     ],
 }
 
@@ -131,7 +131,7 @@ def split_observation_text(text: str, chunk: int = 100) -> str:
 # ------------------------------------------------------------
 # RENDER DEL CHECKLIST (con herramientas integradas por ítem)
 # ------------------------------------------------------------
-st.header("Checklist por etapas")
+st.header("Checklist")
 st.markdown("Responde con ✅ Cumple / ❌ No cumple / ⚪ No aplica. Si marcas **No cumple**, podrás **adjuntar evidencia**.")
 
 for categoria, items in CATEGORIAS.items():
