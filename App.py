@@ -193,93 +193,105 @@ for categoria, items in CATEGORIAS.items():
                 else:
                     st.info("Ingrese calorías declaradas para evaluar la diferencia.")
 
-        if titulo == "Determinación de aplicabilidad de sellos":
-            st.markdown("<div style='background:#e6f0ff;padding:10px;border-radius:8px;'><b>Herramienta:</b> Determine si aplican sellos de advertencia.</div>", unsafe_allow_html=True)
-            col1, col2 = st.columns([0.6, 0.4])
-            with col1:
-                estado_fisico = st.radio("Estado físico", ["Sólido / semisólido (por 100 g)", "Líquido (por 100 mL)"], index=0, key="sello_fisico")
-                kcal = st.number_input("Calorías (kcal)", min_value=0.0, value=200.0, step=1.0, key="sello_kcal")
-                azuc_tot = st.number_input("Azúcares totales (g)", min_value=0.0, value=10.0, step=0.1, key="sello_azu")
-                grasa_sat = st.number_input("Grasa saturada (g)", min_value=0.0, value=2.0, step=0.1, key="sello_sat")
-                grasa_trans = st.number_input("Grasa trans (mg)", min_value=0.0, value=0.0, step=1.0, key="sello_trans_mg")
-                sodio_mg = st.number_input("Sodio (mg)", min_value=0.0, value=300.0, step=5.0, key="sello_sod")
-                bebida_sin_energia = False
-                if "Líquido" in estado_fisico:
-                    bebida_sin_energia = st.checkbox("¿Bebida sin aporte energético? (0 kcal por 100 mL)", value=False, key="sello_bebida0")
-            with col2:
-                kcal_azu_tot = 4.0 * azuc_tot
-                pct_azu = 100.0 * kcal_azu_tot / kcal if kcal > 0 else 0.0
-                pct_sat = 100.0 * (9.0 * grasa_sat) / kcal if kcal > 0 else 0.0
-                grasa_trans_g = grasa_trans / 1000.0
-                pct_trans = 100.0 * (9.0 * grasa_trans_g) / kcal if kcal > 0 else 0.0
+if titulo == "Ubicación y tamaño de sellos (Tabla 17)":
 
-                criterio_sodio_a = (kcal > 0 and (sodio_mg / max(kcal, 1.0)) >= 1.0)
-                if "Sólido" in estado_fisico:
-                    criterio_sodio_b = (sodio_mg >= 300.0)
-                else:
-                    criterio_sodio_b = (sodio_mg >= 40.0) if bebida_sin_energia else (sodio_mg / max(kcal, 1.0)) >= 1.0
+    # --------------------------------------------------
+    # DATOS DE ENTRADA
+    # --------------------------------------------------
+    num_sellos = st.number_input(
+        "Cantidad de sellos en la cara principal",
+        min_value=1,
+        step=1
+    )
 
-                sellos = []
-                if pct_azu >= 10.0: sellos.append("EXCESO EN AZÚCARES")
-                if pct_sat >= 10.0: sellos.append("EXCESO EN GRASAS SATURADAS")
-                if pct_trans >= 1.0: sellos.append("EXCESO EN GRASAS TRANS")
-                if criterio_sodio_a or criterio_sodio_b: sellos.append("EXCESO EN SODIO")
+    lado_real_cm = st.number_input(
+        "Tamaño del sello en el arte (cm)",
+        min_value=0.0,
+        step=0.1
+    )
 
-                if len(sellos) == 0:
-                    st.success("✅ No requiere sellos según los límites ingresados.")
-                else:
-                    st.error("⚠️ Debe llevar sello(s): " + ", ".join(sellos))
+    espaciado_cm = st.number_input(
+        "Espaciado entre sellos (cm)",
+        min_value=0.0,
+        step=0.1
+    )
 
-                st.caption("Umbrales: azúcares ≥10% kcal; saturadas ≥10%; trans ≥1% kcal; sodio ≥1 mg/kcal o ≥300 mg/100 g (sólidos) y ≥40 mg/100 mL (bebidas sin energía).")
+    # --------------------------------------------------
+    # VERIFICACIÓN SEGÚN CANTIDAD DE SELLOS
+    # --------------------------------------------------
+    st.markdown("---")
+    st.write("**Verificación del sello en arte:**")
+    st.write(f"• Tamaño del sello: {lado_real_cm:.2f} cm")
 
-        if titulo == "Ubicación y tamaño de sellos (Tabla 17)":
-     # --------------------------------------------------
-# DATOS DE ENTRADA
-# --------------------------------------------------
-num_sellos = st.number_input(
-    "Cantidad de sellos en la cara principal",
-    min_value=1,
-    step=1
-)
+    # ==================================================
+    # CASO 1 — UN SOLO SELLO (SOLO TABLA 17)
+    # ==================================================
+    if num_sellos == 1:
 
-lado_real_cm = st.number_input(
-    "Tamaño del sello en el arte (cm)",
-    min_value=0.0,
-    step=0.1
-)
+        if lado_real_cm >= lado_base:
+            st.success(
+                f"✅ **CUMPLE:** El sello ({lado_real_cm:.2f} cm) "
+                f"cumple el mínimo de {lado_base:.2f} cm según Tabla 17."
+            )
+        else:
+            diferencia = lado_base - lado_real_cm
+            st.error(
+                f"❌ **NO CUMPLE:** El sello ({lado_real_cm:.2f} cm) "
+                f"es menor al mínimo requerido ({lado_base:.2f} cm)."
+            )
+            st.warning(
+                f"**Solución:** Aumentar el sello al menos {diferencia:.2f} cm."
+            )
 
-espaciado_cm = st.number_input(
-    "Espaciado entre sellos (cm)",
-    min_value=0.0,
-    step=0.1
-)
-
-# --------------------------------------------------
-# VERIFICACIÓN SEGÚN CANTIDAD DE SELLOS
-# --------------------------------------------------
-st.markdown("---")
-st.write("**Verificación del sello en arte:**")
-st.write(f"• Tamaño del sello: {lado_real_cm:.2f} cm")
-
-# ==================================================
-# CASO 1 — UN SOLO SELLO (SOLO TABLA 17)
-# ==================================================
-if num_sellos == 1:
-
-    if lado_real_cm >= lado_base:
-        st.success(
-            f"✅ **CUMPLE:** El sello ({lado_real_cm:.2f} cm) "
-            f"cumple el mínimo de {lado_base:.2f} cm según Tabla 17."
-        )
+    # ==================================================
+    # CASO 2 — DOS O MÁS SELLOS (TABLA 17 + 30%)
+    # ==================================================
     else:
-        diferencia = lado_base - lado_real_cm
-        st.error(
-            f"❌ **NO CUMPLE:** El sello ({lado_real_cm:.2f} cm) "
-            f"es menor al mínimo requerido ({lado_base:.2f} cm)."
+
+        ancho_real_total = (
+            num_sellos * lado_real_cm +
+            (num_sellos - 1) * espaciado_cm
         )
-        st.warning(
-            f"**Solución:** Aumentar el sello al menos {diferencia:.2f} cm."
-        )
+
+        ancho_max_total = 0.30 * ancho_cara_cm
+
+        cumple_minimo = lado_real_cm >= lado_base
+        cumple_30 = ancho_real_total <= ancho_max_total
+
+        st.write(f"• Cantidad de sellos: {num_sellos}")
+        st.write(f"• Ancho total ocupado: {ancho_real_total:.2f} cm")
+        st.write(f"• Límite permitido (30%): {ancho_max_total:.2f} cm")
+
+        if cumple_minimo and cumple_30:
+            st.success(
+                f"✅ **CUMPLE:** Cada sello cumple el mínimo de {lado_base:.2f} cm "
+                f"y el conjunto no supera el 30% del ancho de la cara principal."
+            )
+
+        elif not cumple_minimo:
+            diferencia = lado_base - lado_real_cm
+            st.error(
+                f"❌ **NO CUMPLE:** Cada sello ({lado_real_cm:.2f} cm) "
+                f"es menor al mínimo requerido ({lado_base:.2f} cm)."
+            )
+            st.warning(
+                f"**Solución:** Aumentar cada sello al menos {diferencia:.2f} cm."
+            )
+
+        elif not cumple_30:
+            tamaño_max_cumple = (
+                (ancho_max_total - (num_sellos - 1) * espaciado_cm)
+                / num_sellos
+            )
+            st.error(
+                "❌ **NO CUMPLE:** El ancho total de los sellos "
+                "excede el 30% permitido."
+            )
+            st.warning(
+                f"**Solución:** Reducir cada sello a máximo "
+                f"{tamaño_max_cumple:.2f} cm."
+            )
+
 
 
         nota = st.text_area("Observación (opcional)", value=st.session_state.note_810.get(titulo, ""), key=f"{titulo}_nota")
