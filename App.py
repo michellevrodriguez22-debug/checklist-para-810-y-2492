@@ -297,42 +297,50 @@ for categoria, items in CATEGORIAS.items():
                             st.error(f"❌ **NO CUMPLE:** El sello ({lado_real_cm:.2f} cm) es menor al mínimo requerido ({lado_base:.2f} cm)")
                             diferencia = lado_base - lado_real_cm
                             st.warning(f"**Solución:** Aumentar el sello en {diferencia:.2f} cm")
+else:
+    # Para múltiples sellos
+    ancho_real_total = num_sellos * lado_real_cm + (num_sellos - 1) * espaciado_cm
+    ancho_max_total = 0.30 * ancho_cara_cm
 
-                    else:
-                        # Verificación para múltiples sellos: debe cumplir límite del 30%
-                        ancho_real_total = num_sellos * lado_real_cm + (num_sellos - 1) * espaciado_cm
-                        ancho_max_total = 0.30 * ancho_cara_cm
-# Validaciones normativas reales
-cumple_minimo = lado_real_cm >= lado_base
-cumple_30 = ancho_real_total <= ancho_max_total
+    cumple_minimo = lado_real_cm >= lado_base
+    cumple_30 = ancho_real_total <= ancho_max_total
 
-if cumple_minimo and cumple_30:
-    st.success(
-        f"✅ **CUMPLE:** "
-        f"El tamaño del sello ({lado_real_cm:.2f} cm) cumple el mínimo "
-        f"y el ancho total ({ancho_real_total:.2f} cm) no supera el 30%"
-    )
+    st.markdown("---")
+    st.write("**Verificación del sello en arte:**")
+    st.write(f"• Tamaño en arte: {lado_real_cm:.2f} cm")
+    st.write(f"• Ancho total ocupado: {ancho_real_total:.2f} cm")
+    st.write(f"• Límite permitido (30%): {ancho_max_total:.2f} cm")
 
-elif not cumple_minimo:
-    st.error(
-        f"❌ **NO CUMPLE:** "
-        f"Cada sello ({lado_real_cm:.2f} cm) es menor al mínimo requerido "
-        f"({lado_base:.2f} cm según Tabla 17)"
-    )
+    if cumple_minimo and cumple_30:
+        st.success(
+            f"✅ **CUMPLE:** "
+            f"Cada sello cumple el mínimo de {lado_base:.2f} cm "
+            f"y el conjunto no supera el 30% del ancho de la cara principal."
+        )
 
-elif not cumple_30:
-    st.error(
-        f"❌ **NO CUMPLE:** "
-        f"El ancho total ({ancho_real_total:.2f} cm) excede el 30% "
-        f"del ancho de la cara principal ({ancho_max_total:.2f} cm)"
-    )
+    elif not cumple_minimo:
+        st.error(
+            f"❌ **NO CUMPLE:** "
+            f"Cada sello ({lado_real_cm:.2f} cm) es menor al mínimo requerido "
+            f"({lado_base:.2f} cm según Tabla 17)."
+        )
+        diferencia = lado_base - lado_real_cm
+        st.warning(f"**Solución:** Aumentar cada sello al menos {diferencia:.2f} cm")
 
+    elif not cumple_30:
+        st.error(
+            f"❌ **NO CUMPLE:** "
+            f"El ancho total ({ancho_real_total:.2f} cm) excede el 30% "
+            f"del ancho de la cara principal ({ancho_max_total:.2f} cm)."
+        )
+        tamaño_max_cumple = (
+            (ancho_max_total - (num_sellos - 1) * espaciado_cm) / num_sellos
+        )
+        st.warning(
+            f"**Solución:** Reducir cada sello a máximo "
+            f"{tamaño_max_cumple:.2f} cm."
+        )
 
-                            # Calcular el tamaño máximo que SÍ cumpliría
-                            tamaño_max_cumple = (ancho_max_total - (num_sellos - 1) * espaciado_cm) / num_sellos
-                            st.warning(f"**Solución:** Reducir cada sello a máximo {tamaño_max_cumple:.2f} cm")
-                else:
-                    st.warning("No se pudo determinar el tamaño para el área seleccionada.")
 
         nota = st.text_area("Observación (opcional)", value=st.session_state.note_810.get(titulo, ""), key=f"{titulo}_nota")
         st.session_state.note_810[titulo] = nota
