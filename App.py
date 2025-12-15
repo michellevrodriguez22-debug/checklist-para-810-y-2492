@@ -281,55 +281,6 @@ if num_sellos == 1:
             f"**Solución:** Aumentar el sello al menos {diferencia:.2f} cm."
         )
 
-# ==================================================
-# CASO 2 — DOS O MÁS SELLOS (TABLA 17 + 30%)
-# ==================================================
-else:
-
-    ancho_real_total = (
-        num_sellos * lado_real_cm +
-        (num_sellos - 1) * espaciado_cm
-    )
-
-    ancho_max_total = 0.30 * ancho_cara_cm
-
-    cumple_minimo = lado_real_cm >= lado_base
-    cumple_30 = ancho_real_total <= ancho_max_total
-
-    st.write(f"• Cantidad de sellos: {num_sellos}")
-    st.write(f"• Ancho total ocupado: {ancho_real_total:.2f} cm")
-    st.write(f"• Límite permitido (30%): {ancho_max_total:.2f} cm")
-
-    if cumple_minimo and cumple_30:
-        st.success(
-            f"✅ **CUMPLE:** Cada sello cumple el mínimo de {lado_base:.2f} cm "
-            f"y el conjunto no supera el 30% del ancho de la cara principal."
-        )
-
-    elif not cumple_minimo:
-        diferencia = lado_base - lado_real_cm
-        st.error(
-            f"❌ **NO CUMPLE:** Cada sello ({lado_real_cm:.2f} cm) "
-            f"es menor al mínimo requerido ({lado_base:.2f} cm)."
-        )
-        st.warning(
-            f"**Solución:** Aumentar cada sello al menos {diferencia:.2f} cm."
-        )
-
-    elif not cumple_30:
-        tamaño_max_cumple = (
-            (ancho_max_total - (num_sellos - 1) * espaciado_cm)
-            / num_sellos
-        )
-        st.error(
-            "❌ **NO CUMPLE:** El ancho total de los sellos "
-            "excede el 30% permitido."
-        )
-        st.warning(
-            f"**Solución:** Reducir cada sello a máximo "
-            f"{tamaño_max_cumple:.2f} cm."
-        )
-
 
         nota = st.text_area("Observación (opcional)", value=st.session_state.note_810.get(titulo, ""), key=f"{titulo}_nota")
         st.session_state.note_810[titulo] = nota
