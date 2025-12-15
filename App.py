@@ -237,30 +237,51 @@ for categoria, items in CATEGORIAS.items():
             st.dataframe(df_tabla17, use_container_width=True)
             colA, colB = st.columns([0.55, 0.45])
             with colA:
-                area_sel = st.selectbox("Rango de área de la cara principal (cm²)", options=[r[0] for r in TABLA_17 if r[0] != "< 30 cm²"], key="t17_area")
+                area_sel = st.selectbox("Rango de área de la cara principal (cm²)", 
+                                        options=[r[0] for r in TABLA_17 if r[0] != "< 30 cm²"], 
+                                        key="t17_area")
                 num_sellos = st.selectbox("Cantidad de sellos", options=[1,2,3,4], index=1, key="t17_n")
-                espaciado_cm = st.number_input("Separación estimada entre sellos (cm)", min_value=0.0, value=0.2, step=0.1, key="t17_sep")
+                espaciado_cm = st.number_input("Separación estimada entre sellos (cm)", 
+                                               min_value=0.0, value=0.2, step=0.1, key="t17_sep")
+                # Para todos los casos necesitamos el ancho de la cara (ahora es obligatorio)
+                ancho_cara_cm = st.number_input("Ancho de la cara principal (cm)", 
+                                                min_value=1.0, value=10.0, step=0.5, key="t17_ancho")
+            
             with colB:
-                ancho_cara_cm = None
-                if area_sel == "> 300 cm²":
-                    ancho_cara_cm = st.number_input("Ancho de la cara principal (cm) para calcular 15% del lado", min_value=1.0, value=10.0, step=0.5, key="t17_ancho")
-
-            def get_lado_sello(area_key: str, ancho_cara=None):
-                if area_key == "> 300 cm²":
-                    if ancho_cara is None:
-                        return None
-                    return round(0.15 * float(ancho_cara), 2)
+                # Obtener el lado del sello individual según Tabla 17
+                lado_indiv = None
                 for k, v in TABLA_17:
-                    if k == area_key:
-                        return v
-                return None
-
-            lado_cm = get_lado_sello(area_sel, ancho_cara_cm)
-            if lado_cm is None:
-                st.warning("Para el rango seleccionado, ingresa el **ancho de la cara principal (cm)** para calcular el 15% del lado del sello.")
-            else:
-                ancho_total = round(num_sellos * lado_cm + (num_sellos - 1) * espaciado_cm, 2)
-                st.success(f"**Resultado:** Lado mínimo del sello = {lado_cm} cm · Ancho total estimado ({num_sellos} sello(s)) ≈ {ancho_total} cm.")
+                    if k == area_sel:
+                        if isinstance(v, (int, float)):
+                            lado_indiv = v
+                        break
+                
+                # Para envases > 300 cm², calcular 15% del ancho de cara
+                if lado_indiv is None and area_sel == "> 300 cm²":
+                    lado_indiv = 0.15 * ancho_cara_cm
+                
+                if lado_indiv is not None:
+                    # Calcular ancho máximo permitido (30% del ancho de cara según norma)
+                    ancho_max_total = 0.30 * ancho_cara_cm
+                    ancho_estimado = num_sellos * lado_indiv + (num_sellos - 1) * espaciado_cm
+                    
+                    if num_sellos == 1:
+                        st.success(f"**Para 1 sello:** Lado mínimo = {lado_indiv:.2f} cm")
+                    else:
+                        st.write(f"**Tamaño individual según Tabla 17:** {lado_indiv:.2f} cm")
+                        st.write(f"**Ancho total estimado:** {ancho_estimado:.2f} cm")
+                        st.write(f"**Ancho máximo permitido (30% de {ancho_cara_cm} cm):** {ancho_max_total:.2f} cm")
+                        
+                        if ancho_estimado <= ancho_max_total:
+                            st.success(f"✅ **Aceptable:** El tamaño de {lado_indiv:.2f} cm por sello es válido")
+                            st.info(f"Los {num_sellos} sellos ocuparán {ancho_estimado:.2f} cm (≤ {ancho_max_total:.2f} cm)")
+                        else:
+                            # Calcular tamaño ajustado si excede el 30%
+                            lado_ajustado = (ancho_max_total - (num_sellos - 1) * espaciado_cm) / num_sellos
+                            st.error(f"⚠️ **No cumple:** El ancho total ({ancho_estimado:.2f} cm) excede el máximo permitido ({ancho_max_total:.2f} cm)")
+                            st.warning(f"**Solución:** Reducir el tamaño de cada sello a {lado_ajustado:.2f} cm máximo")
+                else:
+                    st.warning("No se pudo determinar el tamaño del sello para el área seleccionada.")
 
         # Observación y evidencia
         nota = st.text_area("Observación (opcional)", value=st.session_state.note_810.get(titulo, ""), key=f"{titulo}_nota")
