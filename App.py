@@ -41,18 +41,18 @@ solo_no = st.sidebar.checkbox("Mostrar solo 'No cumple'", value=False)
 # TABLA 17 — referencia (informativa en pantalla)
 # ------------------------------------------------------------
 TABLA_17 = [
-    ("< 30 cm²", None),
-    ("≥30 a <35 cm²", 1.7),
-    ("≥35 a <40 cm²", 1.8),
-    ("≥40 a <50 cm²", 2.0),
-    ("≥50 a <60 cm²", 2.2),
-    ("≥60 a <80 cm²", 2.5),
-    ("≥80 a <100 cm²", 2.8),
-    ("≥100 a <125 cm²", 3.1),
-    ("≥125 a <150 cm²", 3.4),
-    ("≥150 a <200 cm²", 3.9),
-    ("≥200 a <250 cm²", 4.4),
-    ("≥250 a <300 cm²", 4.8),
+    ("< 30 cm²", Rotular en envase secundario o incluir codigo QR o página de internet para consultar),
+    ("≥30 a <35 cm²", 1.7 cm),
+    ("≥35 a <40 cm²", 1.8 cm),
+    ("≥40 a <50 cm²", 2.0 cm),
+    ("≥50 a <60 cm²", 2.2 cm),
+    ("≥60 a <80 cm²", 2.5 cm),
+    ("≥80 a <100 cm²", 2.8 cm),
+    ("≥100 a <125 cm²", 3.1 cm),
+    ("≥125 a <150 cm²", 3.4 cm),
+    ("≥150 a <200 cm²", 3.9 cm),
+    ("≥200 a <250 cm²", 4.4 cm),
+    ("≥250 a <300 cm²", 4.8 cm),
     ("> 300 cm²", "15% del lado de la cara principal"),
 ]
 df_tabla17 = pd.DataFrame(TABLA_17, columns=["Área de la cara principal", "Lado mínimo del sello (cm)"])
