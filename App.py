@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import base64
@@ -172,6 +171,7 @@ for categoria, items in CATEGORIAS.items():
         # Herramientas integradas (cuadros azul #e6f0ff)
         if titulo == "Verificación de calorías declaradas (±20% tolerancia)":
             st.markdown("<div style='background:#e6f0ff;padding:10px;border-radius:8px;'><b>Herramienta:</b> Verifique el valor energético declarado vs calculado.</div>", unsafe_allow_html=True)
+            colA,  = st.columns(2)
             colA, colB = st.columns(2)
             with colA:
                 base = st.radio("Base de declaración", ["Por 100 g", "Por 100 mL"], index=0, key="base_cal")
@@ -179,6 +179,7 @@ for categoria, items in CATEGORIAS.items():
                 prot_g = st.number_input("Proteínas (g)", min_value=0.0, value=5.0, step=0.1, key="c_cal_prot")
                 grasa_g = st.number_input("Grasas (g)", min_value=0.0, value=7.0, step=0.1, key="c_cal_grasa")
                 kcal_decl = st.number_input("Calorías declaradas (kcal)", min_value=0.0, value=200.0, step=1.0, key="c_cal_decl")
+            with :
             with colB:
                 kcal_calc = 4.0 * carb_g + 4.0 * prot_g + 9.0 * grasa_g
                 diff_abs = abs(kcal_calc - kcal_decl)
@@ -246,7 +247,7 @@ for categoria, items in CATEGORIAS.items():
                 # Para todos los casos necesitamos el ancho de la cara (ahora es obligatorio)
                 ancho_cara_cm = st.number_input("Ancho de la cara principal (cm)", 
                                                 min_value=1.0, value=10.0, step=0.5, key="t17_ancho")
-                
+
                 # NUEVO: Preguntar por el tamaño real del sello en el arte
                 st.markdown("---")
                 st.markdown("**Medida real del sello en el arte:**")
@@ -254,58 +255,66 @@ for categoria, items in CATEGORIAS.items():
                                                min_value=0.1, value=2.0, step=0.1, key="t17_real")
 
             with colB:
-                # Calcular tamaño mínimo según Tabla 17
-                lado_minimo = None
+                # Calcular tamaño según Tabla 17 (para referencia)
+                lado_base = None
                 for k, v in TABLA_17:
                     if k == area_sel:
                         if isinstance(v, (int, float)):
-                            lado_minimo = v
+                            lado_base = v
                         break
-                
+
                 # Para envases > 300 cm², calcular 15% del ancho de cara
-                if lado_minimo is None and area_sel == "> 300 cm²":
-                    lado_minimo = 0.15 * ancho_cara_cm
-                
-                if lado_minimo is not None:
-                    # Mostrar requisito según Tabla 17
-                    st.write(f"**Requisito Tabla 17:**")
-                    st.write(f"• Tamaño mínimo por sello: **{lado_minimo:.2f} cm**")
-                    
-                    # Verificación PRINCIPAL: tamaño mínimo según Tabla 17
-                    st.markdown("---")
-                    st.write(f"**Verificación del tamaño:**")
-                    st.write(f"• Tamaño requerido: {lado_minimo:.2f} cm")
-                    st.write(f"• Tamaño en arte: {lado_real_cm:.2f} cm")
-                    
-                    # Verificar si cumple el tamaño MÍNIMO (esto es lo OBLIGATORIO)
-                    if lado_real_cm >= lado_minimo:
-                        st.success(f"✅ **CUMPLE:** El sello cumple con el tamaño mínimo de {lado_minimo:.2f} cm")
-                        
-                        # Información adicional para múltiples sellos (NO ES OBLIGATORIO)
-                        if num_sellos > 1:
-                            ancho_real_total = num_sellos * lado_real_cm + (num_sellos - 1) * espaciado_cm
-                            ancho_max_recomendado = 0.30 * ancho_cara_cm
-                            
-                            if ancho_real_total > ancho_max_recomendado:
-                                st.info(f"ℹ️ **Nota:** El ancho total de {num_sellos} sellos ({ancho_real_total:.2f} cm) excede el 30% del ancho ({ancho_max_recomendado:.2f} cm), pero esto es **PERMITIDO** ya que cada sello cumple con el tamaño mínimo")
-                            else:
-                                st.success(f"✅ Además, el ancho total ({ancho_real_total:.2f} cm) está dentro del 30% recomendado")
-                    
+                if lado_base is None and area_sel == "> 300 cm²":
+                    lado_base = 0.15 * ancho_cara_cm
+
+                if lado_base is not None:
+                    # Mostrar tamaño base para 1 sello (solo como referencia)
+                    st.write(f"**Referencia (1 sello):** {lado_base:.2f} cm (Tabla 17)")
+
+                    # Calcular el tamaño MÁXIMO permitido por sello según el límite del 30%
+                    # Este es el requisito REAL para múltiples sellos
+                    if num_sellos == 1:
+                        # Para 1 sello: usar tamaño de Tabla 17 como mínimo
+                        tamaño_requerido = lado_base
+                        st.write(f"**Tamaño requerido (1 sello):** {tamaño_requerido:.2f} cm mínimo")
                     else:
-                        # NO cumple el tamaño mínimo - esto SÍ es incumplimiento
-                        st.error(f"❌ **NO CUMPLE:** El sello ({lado_real_cm:.2f} cm) es MENOR al mínimo requerido ({lado_minimo:.2f} cm)")
-                        
-                        # Mostrar cuánto debe aumentar
-                        diferencia = lado_minimo - lado_real_cm
-                        st.warning(f"**Solución:** Aumentar cada sello en al menos {diferencia:.2f} cm")
-                        
-                        # Si hay múltiples sellos, mostrar también el cálculo del 30% como referencia
-                        if num_sellos > 1:
-                            lado_max_recomendado = (0.30 * ancho_cara_cm - (num_sellos - 1) * espaciado_cm) / num_sellos
-                            st.info(f"**Referencia:** Si desea ajustar para que quepa en el 30%, el tamaño máximo por sello sería {lado_max_recomendado:.2f} cm")
+                        # Para 2+ sellos: calcular tamaño máximo según límite 30%
+                        ancho_max_total = 0.30 * ancho_cara_cm
+                        tamaño_max_permitido = (ancho_max_total - (num_sellos - 1) * espaciado_cm) / num_sellos
+                        st.write(f"**Límite para {num_sellos} sellos:**")
+                        st.write(f"- Ancho máximo total: {ancho_max_total:.2f} cm (30% del ancho)")
+                        st.write(f"- Tamaño máximo por sello: **{tamaño_max_permitido:.2f} cm**")
+
+                    # Comparar con tamaño real
+                    st.markdown("---")
+                    st.write(f"**Verificación del sello en arte:**")
+                    st.write(f"• Tamaño en arte: {lado_real_cm:.2f} cm")
+
+                    if num_sellos == 1:
+                        # Verificación para 1 sello: debe ser ≥ tamaño Tabla 17
+                        if lado_real_cm >= lado_base:
+                            st.success(f"✅ **CUMPLE:** El sello ({lado_real_cm:.2f} cm) cumple con el mínimo de {lado_base:.2f} cm")
+                        else:
+                            st.error(f"❌ **NO CUMPLE:** El sello ({lado_real_cm:.2f} cm) es menor al mínimo requerido ({lado_base:.2f} cm)")
+                            diferencia = lado_base - lado_real_cm
+                            st.warning(f"**Solución:** Aumentar el sello en {diferencia:.2f} cm")
+
+                    else:
+                        # Verificación para múltiples sellos: debe cumplir límite del 30%
+                        ancho_real_total = num_sellos * lado_real_cm + (num_sellos - 1) * espaciado_cm
+                        ancho_max_total = 0.30 * ancho_cara_cm
+
+                        if ancho_real_total <= ancho_max_total:
+                            st.success(f"✅ **CUMPLE:** El ancho total ({ancho_real_total:.2f} cm) está dentro del 30% ({ancho_max_total:.2f} cm)")
+                        else:
+                            st.error(f"❌ **NO CUMPLE:** El ancho total ({ancho_real_total:.2f} cm) excede el 30% del ancho ({ancho_max_total:.2f} cm)")
+
+                            # Calcular el tamaño máximo que SÍ cumpliría
+                            tamaño_max_cumple = (ancho_max_total - (num_sellos - 1) * espaciado_cm) / num_sellos
+                            st.warning(f"**Solución:** Reducir cada sello a máximo {tamaño_max_cumple:.2f} cm")
                 else:
-                    st.warning("No se pudo determinar el tamaño mínimo para el área seleccionada.")
-        
+                    st.warning("No se pudo determinar el tamaño para el área seleccionada.")
+
         nota = st.text_area("Observación (opcional)", value=st.session_state.note_810.get(titulo, ""), key=f"{titulo}_nota")
         st.session_state.note_810[titulo] = nota
 
