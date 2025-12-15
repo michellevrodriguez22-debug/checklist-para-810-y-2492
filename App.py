@@ -246,42 +246,68 @@ for categoria, items in CATEGORIAS.items():
                 # Para todos los casos necesitamos el ancho de la cara (ahora es obligatorio)
                 ancho_cara_cm = st.number_input("Ancho de la cara principal (cm)", 
                                                 min_value=1.0, value=10.0, step=0.5, key="t17_ancho")
+                                # Preguntar por el tamaño real del sello en el arte
+                st.markdown("---")
+                st.markdown("**Medida real del sello en el arte:**")
+                lado_real_cm = st.number_input("Lado del sello en el arte (cm)", 
+                                               min_value=0.1, value=2.0, step=0.1, key="t17_real")
             
-            with colB:
-                # Obtener el lado del sello individual según Tabla 17
-                lado_indiv = None
+                    with colB:
+                # Calcular tamaño mínimo según Tabla 17
+                lado_minimo = None
                 for k, v in TABLA_17:
                     if k == area_sel:
                         if isinstance(v, (int, float)):
-                            lado_indiv = v
+                            lado_minimo = v
                         break
                 
                 # Para envases > 300 cm², calcular 15% del ancho de cara
-                if lado_indiv is None and area_sel == "> 300 cm²":
-                    lado_indiv = 0.15 * ancho_cara_cm
+                if lado_minimo is None and area_sel == "> 300 cm²":
+                    lado_minimo = 0.15 * ancho_cara_cm
                 
-                if lado_indiv is not None:
-                    # Calcular ancho máximo permitido (30% del ancho de cara según norma)
-                    ancho_max_total = 0.30 * ancho_cara_cm
-                    ancho_estimado = num_sellos * lado_indiv + (num_sellos - 1) * espaciado_cm
+                if lado_minimo is not None:
+                    # Mostrar resultado del cálculo
+                    st.write(f"**Según Tabla 17:**")
+                    st.write(f"• Tamaño mínimo por sello: {lado_minimo:.2f} cm")
                     
-                    if num_sellos == 1:
-                        st.success(f"**Para 1 sello:** Lado mínimo = {lado_indiv:.2f} cm")
-                    else:
-                        st.write(f"**Tamaño individual según Tabla 17:** {lado_indiv:.2f} cm")
-                        st.write(f"**Ancho total estimado:** {ancho_estimado:.2f} cm")
-                        st.write(f"**Ancho máximo permitido (30% de {ancho_cara_cm} cm):** {ancho_max_total:.2f} cm")
+                    if num_sellos > 1:
+                        # Verificar límite del 30% para múltiples sellos
+                        ancho_max_total = 0.30 * ancho_cara_cm
+                        ancho_estimado = num_sellos * lado_minimo + (num_sellos - 1) * espaciado_cm
                         
-                        if ancho_estimado <= ancho_max_total:
-                            st.success(f"✅ **Aceptable:** El tamaño de {lado_indiv:.2f} cm por sello es válido")
-                            st.info(f"Los {num_sellos} sellos ocuparán {ancho_estimado:.2f} cm (≤ {ancho_max_total:.2f} cm)")
-                        else:
-                            # Calcular tamaño ajustado si excede el 30%
+                        if ancho_estimado > ancho_max_total:
+                            # Ajustar tamaño si excede el 30%
                             lado_ajustado = (ancho_max_total - (num_sellos - 1) * espaciado_cm) / num_sellos
-                            st.error(f"⚠️ **No cumple:** El ancho total ({ancho_estimado:.2f} cm) excede el máximo permitido ({ancho_max_total:.2f} cm)")
-                            st.warning(f"**Solución:** Reducir el tamaño de cada sello a {lado_ajustado:.2f} cm máximo")
+                            st.warning(f"⚠ Con {num_sellos} sellos, el tamaño debe ajustarse a: {lado_ajustado:.2f} cm (30% del ancho)")
+                            lado_minimo = max(lado_minimo, lado_ajustado)
+                    
+                    # NUEVO: Comparar con tamaño real
+                    st.markdown("---")
+                    st.write(f"**Comparación:**")
+                    st.write(f"• Tamaño mínimo requerido: {lado_minimo:.2f} cm")
+                    st.write(f"• Tamaño real en arte: {lado_real_cm:.2f} cm")
+                    
+                    # Determinar si cumple
+                    if lado_real_cm >= lado_minimo:
+                        st.success(f"✅ **CUMPLE:** El sello ({lado_real_cm:.2f} cm) es mayor o igual al mínimo requerido ({lado_minimo:.2f} cm)")
+                        
+                        # Verificar límite del 30% para tamaño real
+                        if num_sellos > 1:
+                            ancho_real_total = num_sellos * lado_real_cm + (num_sellos - 1) * espaciado_cm
+                            ancho_max_total = 0.30 * ancho_cara_cm
+                            
+                            if ancho_real_total <= ancho_max_total:
+                                st.success(f"✅ **CUMPLE límite 30%:** Ancho total ({ancho_real_total:.2f} cm) ≤ 30% del ancho ({ancho_max_total:.2f} cm)")
+                            else:
+                                st.error(f"⚠ **NO CUMPLE límite 30%:** Ancho total ({ancho_real_total:.2f} cm) > 30% del ancho ({ancho_max_total:.2f} cm)")
+                    else:
+                        st.error(f"❌ **NO CUMPLE:** El sello ({lado_real_cm:.2f} cm) es menor al mínimo requerido ({lado_minimo:.2f} cm)")
+                        
+                        # Mostrar cuánto debe aumentar
+                        diferencia = lado_minimo - lado_real_cm
+                        st.warning(f"Debe aumentar el sello en al menos {diferencia:.2f} cm")
                 else:
-                    st.warning("No se pudo determinar el tamaño del sello para el área seleccionada.")
+                    st.warning("No se pudo determinar el tamaño mínimo para el área seleccionada.")
 
         # Observación y evidencia
         nota = st.text_area("Observación (opcional)", value=st.session_state.note_810.get(titulo, ""), key=f"{titulo}_nota")
