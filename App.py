@@ -197,46 +197,51 @@ if titulo == "Ubicación y tamaño de sellos (Tabla 17)":
 
     st.markdown("<div style='background:#e6f0ff;padding:10px;border-radius:8px;'><b>Herramienta:</b> Verificación de tamaño y ubicación de sellos según Tabla 17.</div>", unsafe_allow_html=True)
 
-    # --------------------------------------------------
-    # DATOS DE ENTRADA
-    # --------------------------------------------------
+    # -------------------------------
+    # ENTRADAS (CON KEY 🔑)
+    # -------------------------------
     area_cara_cm2 = st.number_input(
-        "Área de la cara principal de exhibición (cm²)",
+        "Área de la cara principal (cm²)",
         min_value=0.0,
-        step=1.0
+        step=1.0,
+        key="area_cara"
     )
 
     ancho_cara_cm = st.number_input(
         "Ancho de la cara principal (cm)",
         min_value=0.0,
-        step=0.1
+        step=0.1,
+        key="ancho_cara"
     )
 
     num_sellos = st.number_input(
         "Cantidad de sellos en la cara principal",
         min_value=1,
-        step=1
+        step=1,
+        key="num_sellos"
     )
 
     lado_real_cm = st.number_input(
         "Tamaño del sello en el arte (cm)",
         min_value=0.0,
-        step=0.1
+        step=0.1,
+        key="lado_sello"
     )
 
     espaciado_cm = st.number_input(
         "Espaciado entre sellos (cm)",
         min_value=0.0,
-        step=0.1
+        step=0.1,
+        key="espaciado_sellos"
     )
 
-    # --------------------------------------------------
-    # CÁLCULO DEL LADO BASE — TABLA 17
-    # --------------------------------------------------
+    # -------------------------------
+    # TABLA 17 → LADO BASE
+    # -------------------------------
     lado_base = None
 
     if area_cara_cm2 < 30:
-        st.warning("Área < 30 cm² → Rotular en envase secundario o usar QR (Tabla 17).")
+        st.warning("Área < 30 cm² → rotular en envase secundario o QR.")
     elif area_cara_cm2 < 35:
         lado_base = 1.7
     elif area_cara_cm2 < 40:
@@ -261,42 +266,40 @@ if titulo == "Ubicación y tamaño de sellos (Tabla 17)":
         lado_base = 4.8
     else:
         lado_base = 0.15 * ancho_cara_cm
-        st.info("Área > 300 cm² → lado mínimo = 15% del ancho de la cara principal.")
+        st.info("Área > 300 cm² → lado = 15% del ancho.")
 
-    # --------------------------------------------------
+    # -------------------------------
     # VERIFICACIÓN
-    # --------------------------------------------------
+    # -------------------------------
     if lado_base is not None:
 
         st.markdown("---")
         st.write(f"**Lado mínimo requerido:** {lado_base:.2f} cm")
+        st.write(f"**Cantidad de sellos detectada:** {num_sellos}")
 
-        # ===== UN SOLO SELLO =====
+        # 🔹 UN SELLO
         if num_sellos == 1:
 
             if lado_real_cm >= lado_base:
-                st.success("✅ **CUMPLE:** Tamaño correcto según Tabla 17.")
+                st.success("✅ CUMPLE (1 sello — Tabla 17)")
             else:
-                st.error("❌ **NO CUMPLE:** El sello es menor al mínimo permitido.")
-                st.warning(f"Solución: aumentar el sello a {lado_base:.2f} cm.")
+                st.error("❌ NO CUMPLE (tamaño insuficiente)")
 
-        # ===== DOS O MÁS SELLOS =====
+        # 🔹 DOS O MÁS SELLOS
         else:
             ancho_real_total = num_sellos * lado_real_cm + (num_sellos - 1) * espaciado_cm
             ancho_max_total = 0.30 * ancho_cara_cm
 
-            cumple_lado = lado_real_cm >= lado_base
-            cumple_30 = ancho_real_total <= ancho_max_total
-
             st.write(f"• Ancho total ocupado: {ancho_real_total:.2f} cm")
-            st.write(f"• Límite permitido (30%): {ancho_max_total:.2f} cm")
+            st.write(f"• Límite 30%: {ancho_max_total:.2f} cm")
 
-            if cumple_lado and cumple_30:
-                st.success("✅ **CUMPLE:** Tamaño y ocupación correctos.")
-            elif not cumple_lado:
-                st.error("❌ **NO CUMPLE:** Tamaño individual del sello insuficiente.")
-            elif not cumple_30:
-                st.error("❌ **NO CUMPLE:** Los sellos ocupan más del 30% permitido.")
+            if lado_real_cm >= lado_base and ancho_real_total <= ancho_max_total:
+                st.success("✅ CUMPLE (múltiples sellos + 30%)")
+            elif lado_real_cm < lado_base:
+                st.error("❌ NO CUMPLE: tamaño individual insuficiente")
+            else:
+                st.error("❌ NO CUMPLE: excede el 30% permitido")
+
 
         nota = st.text_area("Observación (opcional)", value=st.session_state.note_810.get(titulo, ""), key=f"{titulo}_nota")
         st.session_state.note_810[titulo] = nota
