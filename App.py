@@ -246,13 +246,14 @@ for categoria, items in CATEGORIAS.items():
                 # Para todos los casos necesitamos el ancho de la cara (ahora es obligatorio)
                 ancho_cara_cm = st.number_input("Ancho de la cara principal (cm)", 
                                                 min_value=1.0, value=10.0, step=0.5, key="t17_ancho")
-                                # Preguntar por el tamaño real del sello en el arte
+                
+                # NUEVO: Preguntar por el tamaño real del sello en el arte
                 st.markdown("---")
                 st.markdown("**Medida real del sello en el arte:**")
                 lado_real_cm = st.number_input("Lado del sello en el arte (cm)", 
                                                min_value=0.1, value=2.0, step=0.1, key="t17_real")
             
-                    with colB:
+            with colB:
                 # Calcular tamaño mínimo según Tabla 17
                 lado_minimo = None
                 for k, v in TABLA_17:
