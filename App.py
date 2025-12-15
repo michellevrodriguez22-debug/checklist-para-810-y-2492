@@ -252,8 +252,8 @@ for categoria, items in CATEGORIAS.items():
                 st.markdown("**Medida real del sello en el arte:**")
                 lado_real_cm = st.number_input("Lado del sello en el arte (cm)", 
                                                min_value=0.1, value=2.0, step=0.1, key="t17_real")
-            
-                       with colB:
+
+            with colB:
                 # Calcular tamaño mínimo según Tabla 17 (tamaño individual base)
                 lado_base = None
                 for k, v in TABLA_17:
