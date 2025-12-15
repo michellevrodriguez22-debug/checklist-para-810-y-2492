@@ -179,7 +179,6 @@ for categoria, items in CATEGORIAS.items():
                 prot_g = st.number_input("Proteínas (g)", min_value=0.0, value=5.0, step=0.1, key="c_cal_prot")
                 grasa_g = st.number_input("Grasas (g)", min_value=0.0, value=7.0, step=0.1, key="c_cal_grasa")
                 kcal_decl = st.number_input("Calorías declaradas (kcal)", min_value=0.0, value=200.0, step=1.0, key="c_cal_decl")
-            with :
             with colB:
                 kcal_calc = 4.0 * carb_g + 4.0 * prot_g + 9.0 * grasa_g
                 diff_abs = abs(kcal_calc - kcal_decl)
