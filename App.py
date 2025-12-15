@@ -302,11 +302,31 @@ for categoria, items in CATEGORIAS.items():
                         # Verificación para múltiples sellos: debe cumplir límite del 30%
                         ancho_real_total = num_sellos * lado_real_cm + (num_sellos - 1) * espaciado_cm
                         ancho_max_total = 0.30 * ancho_cara_cm
+# Validaciones normativas reales
+cumple_minimo = lado_real_cm >= lado_base
+cumple_30 = ancho_real_total <= ancho_max_total
 
-                        if ancho_real_total <= ancho_max_total:
-                            st.success(f"✅ **CUMPLE:** El ancho total ({ancho_real_total:.2f} cm) está dentro del 30% ({ancho_max_total:.2f} cm)")
-                        else:
-                            st.error(f"❌ **NO CUMPLE:** El ancho total ({ancho_real_total:.2f} cm) excede el 30% del ancho ({ancho_max_total:.2f} cm)")
+if cumple_minimo and cumple_30:
+    st.success(
+        f"✅ **CUMPLE:** "
+        f"El tamaño del sello ({lado_real_cm:.2f} cm) cumple el mínimo "
+        f"y el ancho total ({ancho_real_total:.2f} cm) no supera el 30%"
+    )
+
+elif not cumple_minimo:
+    st.error(
+        f"❌ **NO CUMPLE:** "
+        f"Cada sello ({lado_real_cm:.2f} cm) es menor al mínimo requerido "
+        f"({lado_base:.2f} cm según Tabla 17)"
+    )
+
+elif not cumple_30:
+    st.error(
+        f"❌ **NO CUMPLE:** "
+        f"El ancho total ({ancho_real_total:.2f} cm) excede el 30% "
+        f"del ancho de la cara principal ({ancho_max_total:.2f} cm)"
+    )
+
 
                             # Calcular el tamaño máximo que SÍ cumpliría
                             tamaño_max_cumple = (ancho_max_total - (num_sellos - 1) * espaciado_cm) / num_sellos
