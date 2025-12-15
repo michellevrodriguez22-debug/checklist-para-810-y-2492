@@ -171,7 +171,7 @@ for categoria, items in CATEGORIAS.items():
         # Herramientas integradas (cuadros azul #e6f0ff)
         if titulo == "Verificación de calorías declaradas (±20% tolerancia)":
             st.markdown("<div style='background:#e6f0ff;padding:10px;border-radius:8px;'><b>Herramienta:</b> Verifique el valor energético declarado vs calculado.</div>", unsafe_allow_html=True)
-            colA,  = st.columns(2)
+            colA  = st.columns(2)
             colA, colB = st.columns(2)
             with colA:
                 base = st.radio("Base de declaración", ["Por 100 g", "Por 100 mL"], index=0, key="base_cal")
