@@ -41,7 +41,7 @@ solo_no = st.sidebar.checkbox("Mostrar solo 'No cumple'", value=False)
 # TABLA 17 — referencia (informativa en pantalla)
 # ------------------------------------------------------------
 TABLA_17 = [
-    ("< 30 cm²", "Rotular en envase secundario o incluir codigo QR o página de internet para consultar"),
+    ("< 30 cm²", "Rotular en envase secundario o incluir codigo QR o página para consultar"),
     ("≥30 a <35 cm²", "1.7 cm"),
     ("≥35 a <40 cm²", "1.8 cm"),
     ("≥40 a <50 cm²", "2.0 cm"),
