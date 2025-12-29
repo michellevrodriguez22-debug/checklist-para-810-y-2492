@@ -327,15 +327,6 @@ for categoria, items in CATEGORIAS.items():
                 else:
                     st.success("✅ No aplica ningún sello frontal de advertencia")
 
-            # -------------------------------
-            # OBSERVACIÓN
-            # -------------------------------
-            nota = st.text_area(
-                "Observación (opcional)",
-                value=st.session_state.note_810.get(titulo, ""),
-                key=f"{titulo}_nota"
-            )
-            st.session_state.note_810[titulo] = nota
 
         st.markdown("---")
 
@@ -481,20 +472,13 @@ for categoria, items in CATEGORIAS.items():
             else:
                 st.error("❌ No cumple con uno o más criterios normativos")
 
-            nota = st.text_area(
-                "Observación (opcional)",
-                value=st.session_state.note_810.get(titulo, ""),
-                key=f"{titulo}_nota"
-            )
-            st.session_state.note_810[titulo] = nota
-
-        # ------------------------------------------------------------
-# OBSERVACIÓN (TODOS LOS ÍTEMS)
+# ------------------------------------------------------------
+# OBSERVACIÓN (APLICA A TODOS LOS ÍTEMS)
 # ------------------------------------------------------------
 nota = st.text_area(
     "Observación (opcional)",
     value=st.session_state.note_810.get(titulo, ""),
-    key=f"nota_{titulo}"
+    key=f"obs_{hash(titulo)}"
 )
 st.session_state.note_810[titulo] = nota
 
@@ -510,23 +494,23 @@ if st.session_state.status_810[titulo] == "no":
         "Subir imágenes",
         type=["jpg", "jpeg", "png"],
         accept_multiple_files=True,
-        key=f"upl_{titulo}"
+        key=f"upl_{hash(titulo)}"
     )
 
     if files:
         caption = st.text_input(
             "Descripción breve de la evidencia (opcional)",
-            key=f"cap_{titulo}"
+            key=f"cap_{hash(titulo)}"
         )
 
-        if st.button("Agregar evidencia", key=f"btn_add_{titulo}"):
+        if st.button("Agregar evidencia", key=f"btn_{hash(titulo)}"):
             for f in files:
                 st.session_state.evidence_810[titulo].append({
                     "name": f.name,
                     "base64": base64.b64encode(f.read()).decode("utf-8"),
                     "caption": caption or ""
                 })
-            st.success(f"Se agregaron {len(files)} imagen(es) al ítem.")
+            st.success(f"Se agregaron {len(files)} imagen(es).")
 
     # Mostrar evidencia acumulada
     ev_list = st.session_state.evidence_810.get(titulo, [])
