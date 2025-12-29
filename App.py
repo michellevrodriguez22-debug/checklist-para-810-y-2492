@@ -73,7 +73,6 @@ CATEGORIAS = {
          "Que la información se declare por 100 g o 100 mL y por porción (según estado físico), incluyendo número de porciones por envase",
          "Res. 810/2021, Art. 7 y 8."),
         ("Nutrientes obligatorios declarados",
-         "La tabla nutricional debe incluir los macronutrientes obligatorios: Calorías, grasas totales, grasas saturadas, grasas trans, carbohidratos totales, azúcares totales, proteínas y sodio. Micronutrientes obligatorios: Vitamina A, Vitamina D, Hierro, Calcio y Zinc (Una forma de declararlos tambien es incluirlos en el apartado inferior de "No es fuente significativa de".",
          "La tabla nutricional debe incluir los macronutrientes obligatorios: Calorías, grasas totales, grasas saturadas, grasas trans, carbohidratos totales, azúcares totales, proteínas y sodio. Micronutrientes obligatorios: Vitamina A, Vitamina D, Hierro, Calcio y Zinc (Una forma de declararlos tambien es incluirlos en el apartado inferior de 'No es fuente significativa de'.",
          "Res. 810/2021, Art. 8.1.1"),
         ("Unidades específicas por nutriente",
