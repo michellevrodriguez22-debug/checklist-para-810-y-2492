@@ -630,4 +630,10 @@ def generar_pdf():
 st.subheader("Generar informe PDF (A4 horizontal)")
 if st.button("Generar PDF"):
     pdf_buffer = generar_pdf()
-    file_name = (nombre_pdf.strip() or f"informe_810_2492_{datetime.now().strftime('%Y%m
+    file_name = (nombre_pdf.strip() or f"informe_810_2492_{datetime.now().strftime('%Y%m%d')}") + ".pdf"
+    st.download_button(
+        "Descargar PDF",
+        data=pdf_buffer,
+        file_name=file_name,
+        mime="application/pdf"
+    )
