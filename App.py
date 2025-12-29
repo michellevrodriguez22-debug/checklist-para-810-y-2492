@@ -65,7 +65,7 @@ CATEGORIAS = {
          "Verificar que el etiquetado nutricional y cualquier información asociada no atribuyan propiedades que no posea, ni induzcan a error sobre composición, cantidad o beneficios.",
          "Res. 810/2021, Art. 5."),
         ("Tabla nutricional obligatoria (aplicabilidad)",
-         "Confirmar que el producto destinado al consumidor final incluya la tabla nutricional, salvo exenciones previstas en la norma.",
+         "Que la tabla nutricional esté diseñada y presentada conforme al área disponible del envase, utilizando el formato permitido por la Resolución 810 de 2021 (vertical, simplificado, lineal o tabular), y que cumpla con los requisitos de legibilidad y estructura establecidos por la norma.",
          "Res. 810/2021, Art. 6."),
     ],
     "2. Estructura y contenido de la tabla nutricional": [
