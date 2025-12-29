@@ -193,6 +193,7 @@ for categoria, items in CATEGORIAS.items():
 
 if titulo == "Ubicación y tamaño de sellos (Tabla 17)":
 
+    st.markdown("<div style='background:#e6f0ff;padding:10px;border-radius:8px;'><b>Herramienta:</b> Verificación de tamaño y ubicación de sellos según Tabla 17.</div>", unsafe_allow_html=True)
     st.markdown(
         "<div style='background:#e6f0ff;padding:10px;border-radius:8px;'>"
         "<b>Herramienta:</b> Verificación de tamaño y ubicación de sellos según Tabla 17."
@@ -201,6 +202,7 @@ if titulo == "Ubicación y tamaño de sellos (Tabla 17)":
     )
 
     # -------------------------------
+    # ENTRADAS (CON KEY 🔑)
     # ENTRADAS
     # -------------------------------
     area_cara_cm2 = st.number_input(
@@ -239,6 +241,7 @@ if titulo == "Ubicación y tamaño de sellos (Tabla 17)":
     )
 
     # -------------------------------
+    # TABLA 17 → LADO BASE
     # TABLA 17 → LADO BASE (SOLO PARA 1 SELLO)
     # -------------------------------
     lado_base = None
@@ -277,8 +280,10 @@ if titulo == "Ubicación y tamaño de sellos (Tabla 17)":
     if lado_base is not None:
 
         st.markdown("---")
+        st.write(f"**Lado mínimo requerido:** {lado_base:.2f} cm")
         st.write(f"**Cantidad de sellos detectada:** {num_sellos}")
 
+        # 🔹 UN SELLO
         # 🔹 UN SELLO → TABLA 17
         if num_sellos == 1:
 
@@ -288,8 +293,10 @@ if titulo == "Ubicación y tamaño de sellos (Tabla 17)":
             if lado_real_cm >= lado_base:
                 st.success("✅ CUMPLE (1 sello — Tabla 17)")
             else:
+                st.error("❌ NO CUMPLE (tamaño insuficiente)")
                 st.error("❌ NO CUMPLE: tamaño insuficiente según Tabla 17")
 
+        # 🔹 DOS O MÁS SELLOS
         # 🔹 DOS O MÁS SELLOS → 30% DEL ANCHO (TU LÓGICA)
         else:
             ancho_real_total = num_sellos * lado_real_cm + (num_sellos - 1) * espaciado_cm
@@ -300,9 +307,14 @@ if titulo == "Ubicación y tamaño de sellos (Tabla 17)":
             st.write(f"• Ancho total ocupado: {ancho_real_total:.2f} cm")
             st.write(f"• Límite 30%: {ancho_max_total:.2f} cm")
 
+            if lado_real_cm >= lado_base and ancho_real_total <= ancho_max_total:
+                st.success("✅ CUMPLE (múltiples sellos + 30%)")
+            elif lado_real_cm < lado_base:
+                st.error("❌ NO CUMPLE: tamaño individual insuficiente")
             if lado_real_cm >= lado_minimo_por_sello:
                 st.success("✅ CUMPLE (múltiples sellos — criterio 30%)")
             else:
+                st.error("❌ NO CUMPLE: excede el 30% permitido")
                 st.error(
                     "❌ NO CUMPLE: tamaño individual insuficiente. "
                     f"Cada sello debe medir al menos {lado_minimo_por_sello:.2f} cm."
