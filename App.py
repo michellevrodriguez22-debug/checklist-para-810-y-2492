@@ -220,8 +220,13 @@ for categoria, items in CATEGORIAS.items():
                     key="sellos_kcal"
                 )
 
-                azucares_libres = st.number_input(
-                    "Azúcares libres (g)",
+                azucares_para_sellos_g = st.number_input(
+                    "Azúcares para evaluación de sellos (g)",
+                    help=(
+                        "Corresponde a los AZÚCARES LIBRES según Res. 3803 de 2016: "
+                        "azúcares añadidos + azúcares provenientes de jugos, concentrados o purés. "
+                        "No usar azúcares totales si el producto contiene fruta entera o lactosa natural."
+                    ),
                     min_value=0.0,
                     step=0.1,
                     key="sellos_azucares_libres"
@@ -234,8 +239,8 @@ for categoria, items in CATEGORIAS.items():
                     key="sellos_sat"
                 )
 
-                grasas_trans = st.number_input(
-                    "Grasas trans (g)",
+                grasas_trans_mg = st.number_input(
+                    "Grasas trans (mg)",
                     min_value=0.0,
                     step=0.01,
                     key="sellos_trans"
@@ -261,14 +266,17 @@ for categoria, items in CATEGORIAS.items():
             # -------------------------------
             # CÁLCULOS SEGÚN RES. 810 / 2492
             # -------------------------------
+            # Conversión de mg a g para grasas trans
+            grasas_trans_g = grasas_trans_mg / 1000  # mg → g
+            
             # Azúcares
-            pct_azucar = (azucares_libres * 4 / kcal_totales * 100) if kcal_totales > 0 else 0
+            pct_azucar = (azucares_para_sellos_g * 4 / kcal_totales * 100) if kcal_totales > 0 else 0
 
             # Grasas saturadas
             pct_sat = (grasas_saturadas * 9 / kcal_totales * 100) if kcal_totales > 0 else 0
 
             # Grasas trans
-            pct_trans = (grasas_trans * 9 / kcal_totales * 100) if kcal_totales > 0 else 0
+            pct_trans = (grasas_trans_g * 9 / kcal_totales * 100) if kcal_totales > 0 else 0
 
             # Sodio – cálculo 1 (relación sodio/kcal)
             rel_sodio_kcal = (sodio_mg / kcal_totales) if kcal_totales > 0 else 0
@@ -330,7 +338,6 @@ for categoria, items in CATEGORIAS.items():
             st.session_state.note_810[titulo] = nota
 
         st.markdown("---")
-
 
 if titulo == "Ubicación y tamaño de sellos (Tabla 17)":
 
