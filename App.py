@@ -200,7 +200,7 @@ def draw_octagon(ax, center_x, center_y, side_len, fc='black', ec='white', lw=1.
 for categoria, items in CATEGORIAS.items():
     st.subheader(categoria)
     for item in items:
-        titulo, que_verificar, recomendacion, referencia = item
+        titulo, que_verificar, referencia = item
 
         estado = st.session_state.status_810.get(titulo, "none")
         if filter_no and estado != "no":
@@ -405,7 +405,7 @@ for categoria, items in CATEGORIAS.items():
         if estado == "yes":
             st.markdown("<div style='background:#e6ffed;padding:6px;border-radius:5px;'>✅ Cumple</div>", unsafe_allow_html=True)
         elif estado == "no":
-            st.markdown(f"<div style='background:#ffe6e6;padding:6px;border-radius:5px;'>❌ No cumple — {recomendacion}</div>", unsafe_allow_html=True)
+            st.markdown("<div style='background:#ffe6e6;padding:6px;border-radius:5px;'>❌ No cumple</div>", unsafe_allow_html=True)
         elif estado == "na":
             st.markdown("<div style='background:#f2f2f2;padding:6px;border-radius:5px;'>⚪ No aplica</div>", unsafe_allow_html=True)
         else:
@@ -448,7 +448,7 @@ for categoria, items in CATEGORIAS.items():
 # ------------------------------------------------------------------
 rows = []
 for items in CATEGORIAS.values():
-    for titulo, que_verificar, recomendacion, referencia in items:
+    for titulo, que_verificar, referencia in items:
         estado_val = st.session_state.status_810.get(titulo, "none")
         estado_humano = (
             "Cumple" if estado_val == "yes"
@@ -459,11 +459,10 @@ for items in CATEGORIAS.values():
         rows.append({
             "Ítem": titulo,
             "Estado": estado_humano,
-            "Recomendación": recomendacion,
             "Referencia": referencia,
             "Observación": st.session_state.note_810.get(titulo, ""),
         })
-df = pd.DataFrame(rows, columns=["Ítem", "Estado", "Recomendación", "Referencia", "Observación"])
+df = pd.DataFrame(rows, columns=["Ítem", "Estado", "Referencia", "Observación"])
 
 st.subheader("Resumen rápido")
 st.write(
@@ -521,7 +520,7 @@ def generar_pdf(df: pd.DataFrame, producto: str, proveedor: str, responsable: st
     story.append(Spacer(1, 5*mm))
 
     # Tabla principal
-    data = [["Ítem", "Estado", "Recomendación", "Referencia", "Observación"]]
+    data = [["Ítem", "Estado", "Referencia", "Observación"]]
     for _, r in df.iterrows():
         obs = r["Observación"] or "-"
         if obs != "-":
@@ -529,7 +528,6 @@ def generar_pdf(df: pd.DataFrame, producto: str, proveedor: str, responsable: st
         data.append([
             Paragraph(str(r["Ítem"]),          style_cell),
             Paragraph(str(r["Estado"]),        style_cell),
-            Paragraph(str(r["Recomendación"]), style_cell),
             Paragraph(str(r["Referencia"]),    style_cell),
             Paragraph(obs,                     style_cell),
         ])
