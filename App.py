@@ -213,11 +213,18 @@ for categoria, items in CATEGORIAS.items():
                     key="base_sellos"
                 )
 
-                azucares_totales = st.number_input(
-                    "Azúcares totales (g)",
+                kcal_totales = st.number_input(
+                    "Calorías totales (kcal)",
+                    min_value=0.0,
+                    step=1.0,
+                    key="sellos_kcal"
+                )
+
+                azucares_libres = st.number_input(
+                    "Azúcares libres (g)",
                     min_value=0.0,
                     step=0.1,
-                    key="sellos_azucares"
+                    key="sellos_azucares_libres"
                 )
 
                 grasas_saturadas = st.number_input(
@@ -246,34 +253,62 @@ for categoria, items in CATEGORIAS.items():
                     key="sellos_edulcorante"
                 )
 
+                bebida_sin_calorias = st.checkbox(
+                    "¿Es bebida sin aporte energético?",
+                    key="bebida_sin_kcal"
+                )
+
             # -------------------------------
-            # LÍMITES TABLA 3 — ALIMENTOS SÓLIDOS
+            # CÁLCULOS SEGÚN RES. 810 / 2492
             # -------------------------------
-            LIM_AZUCAR = 10     # g / 100 g
-            LIM_SAT = 4         # g / 100 g
-            LIM_TRANS = 1       # g / 100 g
-            LIM_SODIO = 400     # mg / 100 g
+            # Azúcares
+            pct_azucar = (azucares_libres * 4 / kcal_totales * 100) if kcal_totales > 0 else 0
+
+            # Grasas saturadas
+            pct_sat = (grasas_saturadas * 9 / kcal_totales * 100) if kcal_totales > 0 else 0
+
+            # Grasas trans
+            pct_trans = (grasas_trans * 9 / kcal_totales * 100) if kcal_totales > 0 else 0
+
+            # Sodio – cálculo 1 (relación sodio/kcal)
+            rel_sodio_kcal = (sodio_mg / kcal_totales) if kcal_totales > 0 else 0
 
             # -------------------------------
             # RESULTADO
             # -------------------------------
             with col2:
-                st.markdown("### Resultado normativo")
+                st.markdown("### Resultado normativo (Res. 810/2021 – Res. 2492/2022)")
 
                 aplica_sellos = []
 
-                if azucares_totales >= LIM_AZUCAR:
-                    aplica_sellos.append("❗ EXCESO EN AZÚCARES")
+                # AZÚCARES
+                if pct_azucar >= 10:
+                    aplica_sellos.append(f"❗ EXCESO EN AZÚCARES ({pct_azucar:.1f}% kcal)")
 
-                if grasas_saturadas >= LIM_SAT:
-                    aplica_sellos.append("❗ EXCESO EN GRASAS SATURADAS")
+                # GRASAS SATURADAS
+                if pct_sat >= 10:
+                    aplica_sellos.append(f"❗ EXCESO EN GRASAS SATURADAS ({pct_sat:.1f}% kcal)")
 
-                if grasas_trans >= LIM_TRANS:
-                    aplica_sellos.append("❗ EXCESO EN GRASAS TRANS")
+                # GRASAS TRANS
+                if pct_trans >= 1:
+                    aplica_sellos.append(f"❗ EXCESO EN GRASAS TRANS ({pct_trans:.1f}% kcal)")
 
-                if sodio_mg >= LIM_SODIO:
+                # SODIO
+                sodio_exceso = False
+
+                if not bebida_sin_calorias and rel_sodio_kcal >= 1:
+                    sodio_exceso = True
+
+                if not bebida_sin_calorias and sodio_mg >= 300:
+                    sodio_exceso = True
+
+                if bebida_sin_calorias and sodio_mg >= 40:
+                    sodio_exceso = True
+
+                if sodio_exceso:
                     aplica_sellos.append("❗ EXCESO EN SODIO")
 
+                # EDULCORANTE
                 if contiene_edulcorante:
                     aplica_sellos.append("⚠️ CONTIENE EDULCORANTE")
 
@@ -295,7 +330,6 @@ for categoria, items in CATEGORIAS.items():
             st.session_state.note_810[titulo] = nota
 
         st.markdown("---")
-
 
 
 if titulo == "Ubicación y tamaño de sellos (Tabla 17)":
