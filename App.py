@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import base64
+from xml.sax.saxutils import escape
 from io import BytesIO
 from datetime import datetime
 from reportlab.lib.pagesizes import A4, landscape
@@ -613,12 +614,15 @@ def generar_pdf():
             obs = st.session_state.note_810.get(titulo, "") or "-"
             if obs != "-":
                 obs = split_observation_text_pdf(obs, chunk=100)
+                obs = escape(obs)  # 👈 FIX CLAVE
+                
             data.append([
-                Paragraph(str(titulo),          style_cell),
-                Paragraph(str(estado_humano),   style_cell),
-                Paragraph(obs,                  style_cell),
-                Paragraph(str(referencia),      style_cell),
+                Paragraph(escape(str(titulo)),        style_cell),
+                Paragraph(escape(str(estado_humano)), style_cell),
+                Paragraph(obs,                        style_cell),
+                Paragraph(escape(str(referencia)),    style_cell),
             ])
+
 
     col_widths = [100*mm, 25*mm, 85*mm, 55*mm]
     tbl = Table(data, colWidths=col_widths, repeatRows=1)
