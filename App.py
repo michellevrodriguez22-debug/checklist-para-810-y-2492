@@ -241,6 +241,7 @@ for categoria, items in CATEGORIAS.items():
                 contiene_edulcorante = st.checkbox(
                     "¿Contiene edulcorantes (calóricos o no calóricos)?",
                     key="sellos_edulcorante"
+                )
 
              # -------------------------------
     # LÍMITES TABLA 3 — ALIMENTOS SÓLIDOS
