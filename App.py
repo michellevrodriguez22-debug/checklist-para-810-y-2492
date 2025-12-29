@@ -190,6 +190,107 @@ for categoria, items in CATEGORIAS.items():
                         st.error("⚠️ Inconsistente: excede ±20% de tolerancia (Res. 810/2021 art. 14).")
                 else:
                     st.info("Ingrese calorías declaradas para evaluar la diferencia.")
+                    
+        if titulo == "Determinación de aplicabilidad de sellos":
+            st.markdown(
+                "<div style='background:#e6f0ff;padding:10px;border-radius:8px;'>"
+                "<b>Herramienta:</b> Determinación de aplicabilidad de sellos según Res. 810/2021 Art. 25 y Tabla 3 "
+                "(modificada por Res. 2492/2022)."
+                "</div>",
+                unsafe_allow_html=True
+            )
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                base = st.radio(
+                    "Base de evaluación",
+                    ["Por 100 g", "Por 100 mL"],
+                    index=0,
+                    key="base_sellos"
+                )
+                
+                azucares_totales = st.number_input(
+                    "Azúcares totales (g)",
+                    min_value=0.0,
+                    step=0.1,
+                    key="sellos_azucares"
+                )
+                
+                grasas_saturadas = st.number_input(
+                    "Grasas saturadas (g)",
+                    min_value=0.0,
+                    step=0.1,
+                    key="sellos_sat"
+                ) 
+                
+                grasas_trans = st.number_input(
+                    "Grasas trans (g)",
+                    min_value=0.0,
+                    step=0.01,
+                    key="sellos_trans"
+                )
+                
+                sodio_mg = st.number_input(
+                    "Sodio (mg)",
+                    min_value=0.0,
+                    step=1.0,
+                    key="sellos_sodio"
+                )
+                
+                contiene_edulcorante = st.checkbox(
+                    "¿Contiene edulcorantes (calóricos o no calóricos)?",
+                    key="sellos_edulcorante"
+                )
+
+        
+
+    # -------------------------------
+    # LÍMITES TABLA 3 — ALIMENTOS SÓLIDOS
+    # (para líquidos puedes ajustar luego si lo deseas)
+    # -------------------------------
+    LIM_AZUCAR = 10     # g / 100 g
+    LIM_SAT = 4         # g / 100 g
+    LIM_TRANS = 1       # g / 100 g
+    LIM_SODIO = 400     # mg / 100 g
+
+    with col2:
+        st.markdown("### Resultado normativo")
+
+        aplica_sellos = []
+
+        if azucares_totales >= LIM_AZUCAR:
+            aplica_sellos.append("❗ EXCESO EN AZÚCARES")
+
+        if grasas_saturadas >= LIM_SAT:
+            aplica_sellos.append("❗ EXCESO EN GRASAS SATURADAS")
+
+        if grasas_trans >= LIM_TRANS:
+            aplica_sellos.append("❗ EXCESO EN GRASAS TRANS")
+
+        if sodio_mg >= LIM_SODIO:
+            aplica_sellos.append("❗ EXCESO EN SODIO")
+
+        if contiene_edulcorante:
+            aplica_sellos.append("⚠️ CONTIENE EDULCORANTE")
+
+        if aplica_sellos:
+            st.error("Aplican los siguientes sellos:")
+            for s in aplica_sellos:
+                st.write(f"- {s}")
+        else:
+            st.success("✅ No aplica ningún sello frontal de advertencia")
+
+    # Observación
+    nota = st.text_area(
+        "Observación (opcional)",
+        value=st.session_state.note_810.get(titulo, ""),
+        key=f"{titulo}_nota"
+    )
+    st.session_state.note_810[titulo] = nota
+
+    st.markdown("---")
+
 
 if titulo == "Ubicación y tamaño de sellos (Tabla 17)":
 
