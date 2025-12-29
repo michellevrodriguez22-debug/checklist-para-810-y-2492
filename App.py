@@ -488,6 +488,61 @@ for categoria, items in CATEGORIAS.items():
             )
             st.session_state.note_810[titulo] = nota
 
+        # ------------------------------------------------------------
+# OBSERVACIÓN (TODOS LOS ÍTEMS)
+# ------------------------------------------------------------
+nota = st.text_area(
+    "Observación (opcional)",
+    value=st.session_state.note_810.get(titulo, ""),
+    key=f"nota_{titulo}"
+)
+st.session_state.note_810[titulo] = nota
+
+
+# ------------------------------------------------------------
+# EVIDENCIA FOTOGRÁFICA (SOLO SI NO CUMPLE)
+# ------------------------------------------------------------
+if st.session_state.status_810[titulo] == "no":
+
+    st.markdown("**Adjuntar evidencia fotográfica (JPG / PNG):**")
+
+    files = st.file_uploader(
+        "Subir imágenes",
+        type=["jpg", "jpeg", "png"],
+        accept_multiple_files=True,
+        key=f"upl_{titulo}"
+    )
+
+    if files:
+        caption = st.text_input(
+            "Descripción breve de la evidencia (opcional)",
+            key=f"cap_{titulo}"
+        )
+
+        if st.button("Agregar evidencia", key=f"btn_add_{titulo}"):
+            for f in files:
+                st.session_state.evidence_810[titulo].append({
+                    "name": f.name,
+                    "base64": base64.b64encode(f.read()).decode("utf-8"),
+                    "caption": caption or ""
+                })
+            st.success(f"Se agregaron {len(files)} imagen(es) al ítem.")
+
+    # Mostrar evidencia acumulada
+    ev_list = st.session_state.evidence_810.get(titulo, [])
+    if ev_list:
+        st.markdown("**Evidencia cargada:**")
+        cols = st.columns(4)
+        for idx, ev in enumerate(ev_list):
+            img_bytes = base64.b64decode(ev["base64"])
+            with cols[idx % 4]:
+                st.image(
+                    img_bytes,
+                    caption=ev["caption"] or ev["name"],
+                    use_column_width=True
+                )
+
+
         st.markdown("---")
         
 
