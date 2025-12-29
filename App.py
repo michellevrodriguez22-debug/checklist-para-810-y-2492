@@ -393,9 +393,7 @@ for categoria, items in CATEGORIAS.items():
                 else:
                     st.info("Debe ubicarse en el **tercio superior central** del envase.")
 
-                st.markdown("• Sin superposición  
-• Alineación horizontal o vertical  
-• Lectura clara desde el frente")
+                st.markdown("• Sin superposición<br>• Alineación horizontal o vertical<br>• Lectura clara desde el frente", unsafe_allow_html=True)
 
             st.markdown("---")
 
@@ -632,5 +630,4 @@ def generar_pdf():
 st.subheader("Generar informe PDF (A4 horizontal)")
 if st.button("Generar PDF"):
     pdf_buffer = generar_pdf()
-    file_name = (nombre_pdf.strip() or f"informe_810_2492_{datetime.now().strftime('%Y%m%d')}") + ".pdf"
-    st.download_button("Descargar PDF", data=pdf_buffer, file_name=file_name, mime="application/pdf")
+    file_name = (nombre_pdf.strip() or f"informe_810_2492_{datetime.now().strftime('%Y%m
