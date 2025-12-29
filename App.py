@@ -98,6 +98,12 @@ CATEGORIAS = {
          "Res. 810/2021, Art. 17 (Tolerancias)."),
     ],
     "3. Sellos frontales de advertencia": [
+        ("Características gráficas y generales de los sellos frontales de advertencia",
+         "Verificar que los sellos frontales de advertencia cumplan con las características gráficas y formales establecidas por la normativa. "
+         "Los sellos deben ser de forma octagonal regular, con fondo negro, borde blanco y texto en color blanco, en mayúsculas y con tipografía legible. "
+         "No deben incluir imágenes, logotipos, símbolos adicionales ni elementos decorativos, ni presentar alteraciones de color, proporción u orientación.",
+         "Res. 810/2021, Art. 27; modificado por Res. 2492/2022."
+        ),
         ("Determinación de aplicabilidad de sellos",
          "Evaluar si corresponde ‘EXCESO EN’ (azúcares, grasas saturadas, grasas trans, sodio) o ‘CONTIENE EDULCORANTE’. 💡 Use la herramienta a continuación para determinar la aplicabilidad de sellos.",
          "Res. 810/2021, Art. 25 y tabla 3, modificado por Res. 2492/2022."),
