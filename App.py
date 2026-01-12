@@ -233,7 +233,7 @@ for categoria, items in CATEGORIAS.items():
                 )
 
                 azucares_para_sellos_g = st.number_input(
-                    "Azúcares para evaluación de sellos (g)",
+                    "Azúcares añadidos (g)",
                     help=(
                         "Corresponde a los AZÚCARES LIBRES según Res. 3803 de 2016: "
                         "azúcares añadidos + azúcares provenientes de jugos, concentrados o purés. "
