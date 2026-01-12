@@ -66,7 +66,7 @@ CATEGORIAS = {
          "Verificar que el etiquetado nutricional y cualquier información asociada no atribuyan propiedades que no posea, ni induzcan a error sobre composición, cantidad o beneficios.",
          "Res. 810/2021, Art. 5."),
         ("Tabla nutricional obligatoria (aplicabilidad)",
-         "Que la tabla nutricional esté diseñada y presentada conforme al área disponible del envase, utilizando el formato permitido vertical, simplificado, lineal o tabular, y que cumpla con los requisitos de legibilidad y estructura establecidos por la norma.",
+         "Que la tabla nutricional esté diseñada con fondo contrastante y presentada cubriendo el 25% del área disponible del envase, utilizando el formato permitido vertical, simplificado, lineal o tabular.",
          "Res. 810/2021, Art. 6."),
     ],
     "2. Estructura y contenido de la tabla nutricional": [
@@ -74,7 +74,7 @@ CATEGORIAS = {
          "Que la información se declare por 100 g o 100 mL y por porción (según estado físico), incluyendo número de porciones por envase",
          "Res. 810/2021, Art. 7 y 8."),
         ("Nutrientes obligatorios declarados",
-         "La tabla nutricional debe incluir los macronutrientes obligatorios: Calorías, grasas totales, grasas saturadas, grasas trans, carbohidratos totales, azúcares totales, proteínas y sodio. Micronutrientes obligatorios: Vitamina A, Vitamina D, Hierro, Calcio y Zinc (Una forma de declararlos tambien es incluirlos en el apartado inferior de 'No es fuente significativa de'.",
+         "La tabla nutricional debe incluir los macronutrientes obligatorios: Calorías, grasas totales, grasas saturadas, grasas trans, carbohidratos totales, azúcares totales, azúcares añadidos, fibra dietaria, proteínas y sodio. Micronutrientes obligatorios: Vitamina A, Vitamina D, Hierro, Calcio y Zinc (Si no se encuentra en la tabla se debe declarar como fuente no significativa de).",
          "Res. 810/2021, Art. 8.1.1"),
         ("Aproximación y expresión de valores nutricionales",
         "Verificar que los valores declarados de energía y nutrientes en la tabla nutricional estén correctamente aproximados y expresados según los rangos establecidos por la normativa. "
