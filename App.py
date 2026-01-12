@@ -151,9 +151,11 @@ for categoria, items in CATEGORIAS.items():
         st.markdown(f"**Qué verificar:** {que_verificar}")
         st.markdown(f"**Referencia normativa:** {referencia}")
         st.markdown(f"**Aplica a:** {APLICA.get(titulo, 'Producto terminado')}")
-
-       if titulo == "Formato, tipografía y jerarquía visual de la tabla nutricional":
+        
+        if titulo == "Formato, tipografía y jerarquía visual de la tabla nutricional":
+           
            with st.expander("Desglose técnico — Formato y tipografía de la tabla nutricional", expanded=False):
+               
                checklist_formato = [
                    "La tabla nutricional utiliza tipografía Arial o Helvetica y su texto es de color negro sobre fondo contrastante",
                    "Tamaño de letra ≥ 8 pt para envases con área de la cara principal ≤ 100 cm² o el tamaño de letra proporcionalmente mayor para envases de mayor tamaño",
