@@ -416,9 +416,15 @@ for categoria, items in CATEGORIAS.items():
                 st.markdown("### Ubicación normativa")
 
                 if tipo_envase == "Plano":
-                    st.info("Debe ubicarse en el **tercio superior derecho** de la cara principal.")
+                    st.checkbox(
+                        "¿Los o el sello se ubican en el **tercio superior derecho** de la cara principal?",
+                        key="ubicacion_plano"
+                    )
                 else:
-                    st.info("Debe ubicarse en el **tercio superior central** del envase.")
+                    st.checkbox(
+                        "¿Los o el sello se ubican en el **tercio superior central** del envase?",
+                        key="ubicacion_cilindrico"
+                    )
 
             st.markdown("---")
 
