@@ -629,7 +629,7 @@ def generar_pdf():
             story.append(Paragraph(
                 "<b>No se registran ítems en estado NO CUMPLE.</b>",
                 style_header
-            )))
+            ))
             doc.build(story)
             buf.seek(0)
             return buf
