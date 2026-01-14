@@ -384,7 +384,7 @@ for categoria, items in CATEGORIAS.items():
             with col1:
                 tipo_envase = st.selectbox(
                     "Tipo de envase",
-                    ["Plano", "Cilíndrico / cónico"],
+                    ["No Cilíndrico", "Cilíndrico / cónico"],
                     key="tipo_envase"
                 )
 
