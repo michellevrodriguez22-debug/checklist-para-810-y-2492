@@ -107,7 +107,7 @@ CATEGORIAS = {
          "Evaluar si corresponde ‘EXCESO EN’ (azúcares, grasas saturadas, grasas trans, sodio) o ‘CONTIENE EDULCORANTE’. 💡 Use la herramienta a continuación para determinar la aplicabilidad de sellos.",
          "Res. 810/2021, Art. 25 y tabla 3, modificado por Res. 2492/2022."),
         ("Ubicación, distribución y tamaño de sellos (Tabla 17)",
-        "Que los sellos frontales de advertencia estén ubicados en el tercio superior de la cara principal de exhibición del empaque. En envases no cilindricos, los sellos deben colocarse en el tercio superior derecho, alineados horizontalmente y sin superposición. En envases cilíndricos, deben ubicarse en el tercio superior central, manteniendo la alineación horizontal y una lectura clara desde el frente. Para verificar el tamaño del sello, se debe hacer uso de la herramienta incluida en la aplicación.",
+        "Que los sellos frontales de advertencia estén ubicados en el tercio superior de la cara principal de exhibición del empaque. En envases no cilindricos, los sellos deben colocarse en el tercio superior derecho. En envases cilíndricos, deben ubicarse en el tercio superior central. Para verificar el tamaño del sello, se debe hacer uso de la herramienta incluida en la aplicación.",
         "Res. 810/2021, Art. 27; modificado por Res. 2492/2022."),
     ],
 }
