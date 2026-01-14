@@ -30,7 +30,6 @@ st.sidebar.header("Datos de la verificación")
 producto = st.sidebar.text_input("Nombre del producto")
 proveedor = st.sidebar.text_input("Proveedor / Fabricante")
 responsable = st.sidebar.text_input("Responsable de la verificación")
-categoria_producto = st.sidebar.selectbox("Tipo de producto", ["Producto terminado", "Materia prima (uso industrial)", "Ambos"])
 invima_registro = st.sidebar.text_input("Registro sanitario INVIMA (si aplica)")
 invima_estado_activo = st.sidebar.checkbox("Verificado en portal INVIMA como ACTIVO y coincidente", value=False)
 invima_url = st.sidebar.text_input("URL de consulta INVIMA (opcional)")
@@ -604,7 +603,6 @@ def generar_pdf():
         f"<b>Producto:</b> {producto or '-'} &nbsp;&nbsp; "
         f"<b>Proveedor:</b> {proveedor or '-'} &nbsp;&nbsp; "
         f"<b>Responsable:</b> {responsable or '-'} &nbsp;&nbsp; "
-        f"<b>Tipo:</b> {categoria_producto or '-'}<br/>"
         f"<b>Registro INVIMA:</b> {inv_str} &nbsp;&nbsp; <b>Estado en portal:</b> {inv_estado}"
     )
     if invima_url.strip():
