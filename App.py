@@ -359,8 +359,7 @@ for categoria, items in CATEGORIAS.items():
 
         if titulo == "Ubicación, distribución y tamaño de sellos (Tabla 17)":
             st.markdown(
-                """
-                **Referencia normativa para la distribución de los sellos de advertencia:**  
+                """ 
                 Para verificar la **distribución de los sellos de advertencia**, consultar la  
                 **Resolución 810 de 2021**, apartado **32.5.6 – Formas de distribución**, disponible en el siguiente enlace oficial:
                 
