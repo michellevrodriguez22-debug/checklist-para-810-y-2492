@@ -420,8 +420,6 @@ for categoria, items in CATEGORIAS.items():
                 else:
                     st.info("Debe ubicarse en el **tercio superior central** del envase.")
 
-                st.markdown("• Sin superposición<br>• Alineación horizontal o vertical<br>• Lectura clara desde el frente", unsafe_allow_html=True)
-
             st.markdown("---")
 
             # -------------------------------
