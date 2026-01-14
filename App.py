@@ -13,12 +13,12 @@ from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, 
 # ------------------------------------------------------------
 # CONFIGURACIÓN INICIAL
 # ------------------------------------------------------------
-st.set_page_config(page_title="Checklist de Etiquetado Nutricional — 810/2021 y 2492/2022", layout="wide")
-st.title("Checklist de Etiquetado Nutricional — Resoluciones 810/2021 y 2492/2022 (Colombia)")
+st.set_page_config(page_title="Checklist de Etiquetado Nutricional — 810/2021, 2492/2022 y 254/2023", layout="wide")
+st.title("Checklist de Etiquetado Nutricional — Resoluciones 810/2021, 2492/2022 y 254/2023 (Colombia)")
 
 # Introducción (extendida)
 st.markdown(
-    "> Este checklist se basa en las **Resoluciones 810 de 2021** y **2492 de 2022**, "
+    "> Este checklist se basa en las **Resoluciones 810 de 2021**, **2492 de 2022** y **254 de 2023**, "
     "que establecen los requisitos técnicos para el **etiquetado nutricional** y el **etiquetado frontal de advertencia** "
     "en alimentos y bebidas envasadas destinados al consumo humano en Colombia."
 )
@@ -81,7 +81,7 @@ CATEGORIAS = {
         "valores ≥1 y <10 con una cifra decimal; valores <1 con dos cifras decimales para vitaminas y minerales y una cifra decimal para el resto de nutrientes.",
         "Res. 810/2021, Art. 8."),
         ("Unidades específicas por nutriente",
-         "Que las unidades declaradas correspondan a lo exigido por la norma: Calorías en kcal y/o kJ; Grasas totales, grasas saturadas, carbohidratos totales, fibra dietaria, azúcares totales, azúcares añadidos y proteina en g; Grasas trans y Sodio en mg; En el caso de micronutrientes: ; Vitamina A en µg ER; Vitamina A en µg; Calcio, Hierro, Vitamina C, Zinc y otros micronutrientes en mg.",
+         "Que las unidades declaradas correspondan a lo exigido por la norma: Calorías en kcal y/o kJ; Grasas totales, grasas saturadas, carbohidratos totales, fibra dietaria, azúcares totales, azúcares añadidos y proteina en g; Grasas trans y Sodio en mg; En el caso de micronutrientes: ; Vitamina A en µg ER; Vitamina D en µg; Calcio, Hierro, Vitamina C, Zinc y otros micronutrientes en mg.",
          "Res. 810/2021, Art. 8"),
         ("Formato, tipografía y jerarquía visual de la tabla nutricional",
          "Verificar con mini checklist",
@@ -107,7 +107,7 @@ CATEGORIAS = {
          "Evaluar si corresponde ‘EXCESO EN’ (azúcares, grasas saturadas, grasas trans, sodio) o ‘CONTIENE EDULCORANTE’. 💡 Use la herramienta a continuación para determinar la aplicabilidad de sellos.",
          "Res. 810/2021, Art. 25 y tabla 3, modificado por Res. 2492/2022."),
         ("Ubicación, distribución y tamaño de sellos (Tabla 17)",
-        "Que los sellos frontales de advertencia estén ubicados en el tercio superior de la cara principal de exhibición del empaque. En envases planos, los sellos deben colocarse en el tercio superior derecho, alineados horizontalmente y sin superposición. En envases cilíndricos, deben ubicarse en el tercio superior central, manteniendo la alineación horizontal y una lectura clara desde el frente. Para verificar el tamaño del sello, se debe hacer uso de la herramienta incluida en la aplicación.",
+        "Que los sellos frontales de advertencia estén ubicados en el tercio superior de la cara principal de exhibición del empaque. En envases no cilindricos, los sellos deben colocarse en el tercio superior derecho, alineados horizontalmente y sin superposición. En envases cilíndricos, deben ubicarse en el tercio superior central, manteniendo la alineación horizontal y una lectura clara desde el frente. Para verificar el tamaño del sello, se debe hacer uso de la herramienta incluida en la aplicación.",
         "Res. 810/2021, Art. 27; modificado por Res. 2492/2022."),
     ],
 }
@@ -157,10 +157,9 @@ for categoria, items in CATEGORIAS.items():
                
                checklist_formato = [
                    "La tabla nutricional utiliza tipografía Arial o Helvetica y su texto es de color negro sobre fondo contrastante",
-                   "Tamaño de letra ≥ 8 pt para envases con área de la cara principal ≤ 100 cm² o el tamaño de letra proporcionalmente mayor para envases de mayor tamaño",
                    "Título declarado como “Información Nutricional”, “Datos de Nutrición” o “Información Nutrimental” y tiene un tamaño mínimo de 10 pt",
                    "Los nombres de calorías, grasa saturada, grasas trans, azúcares añadidos y sodio están en negrilla, tienen un tamaño de letra ≥ 1,3 veces el del resto de nutrientes",
-                   "La tabla conserva márgenes, proporciones y estructura, ni se incluyen imágenes, logotipos o elementos gráficos dentro del recuadro ",
+                   "La tabla conserva márgenes, proporciones y estructura, no se incluyen imágenes, logotipos o elementos gráficos dentro del recuadro ",
                ]
                
                for item in checklist_formato:
@@ -202,7 +201,7 @@ for categoria, items in CATEGORIAS.items():
                 carb_g = st.number_input("Carbohidratos (g)", min_value=0.0, value=20.0, step=0.1, key="c_cal_carb")
                 prot_g = st.number_input("Proteínas (g)", min_value=0.0, value=5.0, step=0.1, key="c_cal_prot")
                 grasa_g = st.number_input("Grasas (g)", min_value=0.0, value=7.0, step=0.1, key="c_cal_grasa")
-                kcal_decl = st.number_input("Calorías declaradas (kcal)", min_value=0.0, value=200.0, step=1.0, key="c_cal_decl")
+                kcal_decl = st.number_input("Calorías declaradas en la etiqueta (kcal)", min_value=0.0, value=200.0, step=1.0, key="c_cal_decl")
             with colB:
                 kcal_calc = 4.0 * carb_g + 4.0 * prot_g + 9.0 * grasa_g
                 diff_abs = abs(kcal_calc - kcal_decl)
@@ -598,7 +597,7 @@ def generar_pdf():
     inv_str = invima_registro or "-"
     inv_estado = "ACTIVO y coincidente" if invima_estado_activo else "No verificado / No activo / No coincide"
     portada = (
-        f"<b>Informe de verificación — Resoluciones 810/2021 y 2492/2022</b><br/>"
+        f"<b>Informe de verificación — Resoluciones 810/2021, 2492/2022 y 254/2023</b><br/>"
         f"<b>Fecha:</b> {fecha_str} &nbsp;&nbsp; "
         f"<b>Producto:</b> {producto or '-'} &nbsp;&nbsp; "
         f"<b>Proveedor:</b> {proveedor or '-'} &nbsp;&nbsp; "
@@ -610,7 +609,7 @@ def generar_pdf():
     story.append(Paragraph(portada, style_header))
     story.append(Spacer(1, 3*mm))
     intro_pdf = (
-        "Este checklist se basa exclusivamente en las Resoluciones 810 de 2021 y 2492 de 2022, "
+        "Este checklist se basa exclusivamente en las Resoluciones 810 de 2021, 2492 de 2022 y 254 de 2023, "
         "que establecen los requisitos técnicos para el etiquetado nutricional y frontal de advertencia en alimentos "
         "y bebidas envasadas destinados al consumo humano en Colombia."
     )
