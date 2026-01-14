@@ -359,6 +359,17 @@ for categoria, items in CATEGORIAS.items():
 
         if titulo == "Ubicación, distribución y tamaño de sellos (Tabla 17)":
             st.markdown(
+                """
+                **Referencia normativa para la distribución de los sellos de advertencia:**  
+                Para verificar la **distribución de los sellos de advertencia**, consultar la  
+                **Resolución 810 de 2021**, apartado **32.5.6 – Formas de distribución**, disponible en el siguiente enlace oficial:
+                
+                🔗 https://www.alcaldiabogota.gov.co/sisjur/normas/Norma1.jsp?i=113678
+                """,
+                unsafe_allow_html=False
+            )
+
+            st.markdown(
                 "<div style='background:#e6f0ff;padding:10px;border-radius:8px;'>"
                 "<b>Herramienta:</b> Verificación de ubicación, distribución y tamaño de sellos "
                 "según Res. 810/2021 Art. 27 y Res. 2492/2022 Art. 32."
