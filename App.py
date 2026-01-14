@@ -415,10 +415,10 @@ for categoria, items in CATEGORIAS.items():
             with col2:
                 st.markdown("### Ubicación normativa")
 
-                if tipo_envase == "Plano":
+                if tipo_envase == "No Cilíndrico":
                     st.checkbox(
                         "¿Los o el sello se ubican en el **tercio superior derecho** de la cara principal?",
-                        key="ubicacion_plano"
+                        key="ubicacion_no_cilindrico"
                     )
                 else:
                     st.checkbox(
