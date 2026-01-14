@@ -370,7 +370,7 @@ for categoria, items in CATEGORIAS.items():
 
             st.markdown(
                 "<div style='background:#e6f0ff;padding:10px;border-radius:8px;'>"
-                "<b>Herramienta:</b> Verificación de ubicación, distribución y tamaño de sellos "
+                "<b>Herramienta:</b> Verificación de ubicación y tamaño de sellos "
                 "según Res. 810/2021 Art. 27 y Res. 2492/2022 Art. 32."
                 "</div>",
                 unsafe_allow_html=True
