@@ -159,6 +159,7 @@ for categoria, items in CATEGORIAS.items():
                    "La tabla nutricional utiliza tipografía Arial o Helvetica y su texto es de color negro sobre fondo contrastante",
                    "Título declarado como “Información Nutricional”, “Datos de Nutrición” o “Información Nutrimental” y tiene un tamaño mínimo de 10 pt",
                    "Los nombres de calorías, grasa saturada, grasas trans, azúcares añadidos y sodio están en negrilla, tienen un tamaño de letra ≥ 1,3 veces el del resto de nutrientes",
+                   "Las grasas y carhohidratos totales están alineados a la izquierda, mientras que sus componentes (como grasas saturadas, grasas trans, fibra dietaria y azúcares) deben ir un poco más hacia la derecha. Los azúcares añadidos deben ir aún más desplazados, mostrando que hacen parte de los azúcares totales.",
                    "La tabla conserva márgenes, proporciones y estructura, no se incluyen imágenes, logotipos o elementos gráficos dentro del recuadro ",
                ]
                
