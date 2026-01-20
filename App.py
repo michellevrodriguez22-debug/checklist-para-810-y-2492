@@ -70,19 +70,16 @@ CATEGORIAS = {
     ],
     "2. Estructura y contenido de la tabla nutricional": [
         ("Unidades de medida (estructura general)",
-         "Que la información se declare por 100 g o 100 mL y por porción (según estado físico), incluyendo número de porciones por envase",
+         "Que la información se declare por 100 g o 100 mL y por porción (según unidad de medida), incluyendo número de porciones por envase; Para productos reconstituidos declarar bajo las recomendaciones de instrucciones de uso",
          "Res. 810/2021, Art. 7 y 8."),
-        ("Nutrientes obligatorios declarados",
-         "La tabla nutricional debe incluir los macronutrientes obligatorios: Calorías, grasas totales, grasas saturadas, grasas trans, carbohidratos totales, azúcares totales, azúcares añadidos, fibra dietaria, proteínas y sodio. Micronutrientes obligatorios: Vitamina A, Vitamina D, Hierro, Calcio y Zinc (Si no se encuentra en la tabla se debe declarar como fuente no significativa de).",
-         "Res. 810/2021, Art. 8.1.1"),
+        ("Nutrientes obligatorios y unidades de declaración",
+         "Verificar mediante el mini checklist que se declaren todos los nutrientes obligatorios en el orden mostrado"
+         "y que las unidades utilizadas correspondan a lo exigido por la normativa.",
+         "Res. 810/2021, Art. 8 y 8.1.1"),
+
         ("Aproximación y expresión de valores nutricionales",
-        "Verificar que los valores declarados de energía y nutrientes en la tabla nutricional estén correctamente aproximados y expresados según los rangos establecidos por la normativa. "
-        "Valores ≥1000 se declaran en números enteros de cuatro cifras; valores ≥100 y <1000 en enteros de tres cifras; valores ≥10 y <100 en enteros de dos cifras; "
-        "valores ≥1 y <10 con una cifra decimal; valores <1 con dos cifras decimales para vitaminas y minerales y una cifra decimal para el resto de nutrientes.",
+        "Verificar en la tabla la correcta aproximación.",
         "Res. 810/2021, Art. 8."),
-        ("Unidades específicas por nutriente",
-         "Que las unidades declaradas correspondan a lo exigido por la norma: Calorías en kcal y/o kJ; Grasas totales, grasas saturadas, carbohidratos totales, fibra dietaria, azúcares totales, azúcares añadidos y proteina en g; Grasas trans y Sodio en mg; En el caso de micronutrientes: ; Vitamina A en µg ER; Vitamina D en µg; Calcio, Hierro, Vitamina C, Zinc y otros micronutrientes en mg.",
-         "Res. 810/2021, Art. 8"),
         ("Formato, tipografía y jerarquía visual de la tabla nutricional",
          "Verificar con mini checklist",
          "Res. 810/2021, Art. 9.1, 9.2 y 9.5; modificado por Res. 2492/2022."),        
@@ -150,6 +147,70 @@ for categoria, items in CATEGORIAS.items():
         st.markdown(f"**Qué verificar:** {que_verificar}")
         st.markdown(f"**Referencia normativa:** {referencia}")
         st.markdown(f"**Aplica a:** {APLICA.get(titulo, 'Producto terminado')}")
+
+        if titulo == "Nutrientes obligatorios y unidades de declaración":
+            
+            with st.expander("Mini checklist — Nutrientes obligatorios y unidades (Res. 810/2021)", expanded=False):
+                
+                checklist_nutrientes = [
+                    "Energía declarada como Calorías, expresada en kcal y opcionalmente kJ",
+                    "Grasa total / Grasa declarada en gramos (g)",
+                    "Grasa saturada / Ácidos grasos saturados / Grasa sat. declarada en gramos (g)",
+                    "Grasas trans / Ácidos grasos trans / trans declaradas en miligramos (mg)",
+                    "Carbohidratos totales / Carb. Total declarados en gramos (g)",
+                    "Azúcares totales declarados en gramos (g)",
+                    "Azúcares añadidos / Az. Añadidos declarados en gramos (g)",
+                    "Fibra dietaria / Fibra declarada en gramos (g)",
+                    "Proteína declaradas en gramos (g)",
+                    "Sodio declarado en miligramos (mg)",
+                    "Vitamina A / Vit. A declarada en microgramos equivalentes de retinol (µg ER)",
+                    "Vitamina D / Vit. D declarada en microgramos (µg)",
+                    "Hierro, calcio y Zinc declarados en miligramos (mg)",
+                    "Cuando aplique, se incluye la leyenda 'No es fuente significativa de …' para macronutrientes y micronutrientes no presentes"
+                ]
+                
+                for item in checklist_nutrientes:
+                    st.checkbox(
+                        item,
+                        key=f"nutrientes_{item}"
+                    )
+
+
+        if titulo == "Aproximación y expresión de valores nutricionales":
+            
+            with st.expander("Cuadro normativo — Aproximación y expresión de valores (Res. 810/2021, Art. 8)", expanded=False):
+                st.markdown("""
+                | **Rango de valores** | **Forma de expresión** | **Ejemplo de aproximación** |
+                |---------------------|------------------------|------------------------------|
+                | Valores ≥ 1000 | Se declararán en números enteros de cuatro cifras | 1136.4 → 1136<br>1136.8 → 1137 |
+                | Valores ≥ 100 y < 1000 | Se declararán en números enteros de tres cifras | 237.8 → 238<br>237.3 → 237 |
+                | Valores ≥ 10 y < 100 | Se declararán en números enteros de dos cifras | 54.6 → 55<br>54.2 → 54 |
+                | Valores ≥ 1 y < 10 | Se declararán con una cifra decimal | 9.82 → 9.8<br>9.87 → 9.9 |
+                | Valores < 1 | Vitaminas y minerales: dos cifras decimales<br>Resto de nutrientes: una cifra decimal | 0.843 → 0.84<br>0.848 → 0.85 |
+                """)
+
+        if titulo == "Declaración de porciones":
+            
+            with st.expander("Tablas de referencia — Declaración de porciones (Res. 810/2021, Art. 12)", expanded=False):
+                st.markdown("""
+                ### 🥄 Equivalencias de medidas caseras permitidas (referencia técnica)
+                | Medida casera | Equivalencia |
+                |--------------|--------------|
+                | 1 cucharadita (cdta) | 5 mL |
+                | 1 cucharada (cda) | 15 mL |
+                | 1 taza | 200 mL o 240 mL |
+                | 1 vaso | 200 mL o 240 mL |
+                | 1 onza fluida (oz fl) | 30 mL |
+                | 1 onza de peso (oz) | 28 g |
+                """)
+
+        st.caption(
+            "ℹ️ Esta tabla se utiliza como referencia para verificar la coherencia de la porción declarada "
+            "en la tabla nutricional. Las medidas caseras deben acompañar siempre a unidades del Sistema Internacional. "
+            "Además, el número de porciones de la tabla debe coincidir con las declaradas en la cara principal (se puede declarar con aprox. o inmediatamente el número según corresponda."
+        )
+
+
         
         if titulo == "Formato, tipografía y jerarquía visual de la tabla nutricional":
            
