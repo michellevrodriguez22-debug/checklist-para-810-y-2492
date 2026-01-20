@@ -427,142 +427,140 @@ for categoria, items in CATEGORIAS.items():
                 """,
                 unsafe_allow_html=False
             )
-
+            
             st.markdown(
                 "<div style='background:#e6f0ff;padding:10px;border-radius:8px;'>"
-                "<b>Herramienta:</b> Verificación de ubicación y tamaño de sellos "
-                "según Res. 810/2021 Art. 27 y Res. 2492/2022 Art. 32."
+                "<b>Herramienta:</b> Verificación de ubicación, distribución y tamaño de sellos "
+                "según Res. 810/2021 y Res. 2492/2022."
                 "</div>",
                 unsafe_allow_html=True
             )
-
-            # -------------------------------
-            # ENTRADAS
-            # -------------------------------
+            
             col1, col2 = st.columns(2)
-
+            
             with col1:
                 tipo_envase = st.selectbox(
                     "Tipo de envase",
-                    ["No Cilíndrico", "Cilíndrico / cónico"],
-                    key="tipo_envase"
+                    ["No cilíndrico", "Cilíndrico / cónico"],
+                    key="t17_tipo_envase"
                 )
-
-                area_cara_cm2 = st.number_input(
-                    "Área de la cara principal (cm²)",
+                
+                ancho_cm = st.number_input(
+                    "Ancho de la cara principal (cm)",
                     min_value=0.0,
-                    step=1.0,
-                    key="area_cara"
+                    step=0.1,
+                    key="t17_ancho"
                 )
-
+                
+                alto_cm = st.number_input(
+                    "Alto de la cara principal (cm)",
+                    min_value=0.0,
+                    step=0.1,
+                    key="t17_alto"
+                )
+                
+                area_cm2 = ancho_cm * alto_cm
+                
+                st.markdown(
+                    f"<div style='background:#f7f7f7;padding:6px;border-radius:6px;'>"
+                    f"<b>Área calculada:</b> {area_cm2:.2f} cm²"
+                    f"</div>",
+                    unsafe_allow_html=True
+                )
+                
                 num_sellos = st.number_input(
                     "Número de sellos requeridos",
                     min_value=1,
                     step=1,
-                    key="num_sellos"
+                    key="t17_num_sellos"
                 )
-
-                lado_real_cm = st.number_input(
-                    "Tamaño real del sello en el arte (cm)",
-                    min_value=0.0,
-                    step=0.1,
-                    key="lado_sello"
-                )
-
-            # -------------------------------
-            # UBICACIÓN (VERIFICACIÓN CUALITATIVA)
-            # -------------------------------
+            
             with col2:
                 st.markdown("### Ubicación normativa")
-
-                if tipo_envase == "No Cilíndrico":
-                    st.checkbox(
-                        "¿Los o el sello se ubican en el **tercio superior derecho** de la cara principal?",
-                        key="ubicacion_no_cilindrico"
+                
+                if tipo_envase == "No cilíndrico":
+                    ubicacion_ok = st.checkbox(
+                        "¿Los sellos se ubican en el tercio superior derecho de la cara principal?",
+                        key="t17_ubic_no_cil"
                     )
+                
                 else:
-                    st.checkbox(
-                        "¿Los o el sello se ubican en el **tercio superior central** del envase?",
-                        key="ubicacion_cilindrico"
+                    ubicacion_ok = st.checkbox(
+                        "¿Los sellos se ubican en el tercio superior central del envase?",
+                        key="t17_ubic_cil"
                     )
-
+                    
             st.markdown("---")
+
 
             # -------------------------------
             # TAMAÑO – CÁLCULO NORMATIVO
             # -------------------------------
             st.markdown("### Verificación de tamaño del sello")
-
+            
             cumple = True
-            observaciones = []
-
-            # 🔹 CASO 1: UN SOLO SELLO → TABLA 18
-            if num_sellos == 1:
-
-                lado_min = None
-
-                if area_cara_cm2 < 30:
-                    st.warning("Área < 30 cm² → debe rotular en envase secundario o QR.")
-                    cumple = False
-                elif area_cara_cm2 <= 300:
-                    # Tabla 18
-                    if area_cara_cm2 < 35:
-                        lado_min = 1.7
-                    elif area_cara_cm2 < 40:
-                        lado_min = 1.8
-                    elif area_cara_cm2 < 50:
-                        lado_min = 2.0
-                    elif area_cara_cm2 < 60:
-                        lado_min = 2.2
-                    elif area_cara_cm2 < 80:
-                        lado_min = 2.5
-                    elif area_cara_cm2 < 100:
-                        lado_min = 2.8
-                    elif area_cara_cm2 < 125:
-                        lado_min = 3.1
-                    elif area_cara_cm2 < 150:
-                        lado_min = 3.4
-                    elif area_cara_cm2 < 200:
-                        lado_min = 3.9
-                    elif area_cara_cm2 < 250:
-                        lado_min = 4.4
-                    else:
-                        lado_min = 4.8
-                else:
-                    lado_min = 3.9  # fijo según Res. 2492
-
-                if lado_min:
-                    st.write(f"**Lado mínimo exigido:** {lado_min:.2f} cm")
-                    if lado_real_cm >= lado_min:
-                        st.success("✅ Cumple tamaño del sello (Tabla 18)")
-                    else:
-                        st.error("❌ No cumple tamaño mínimo del sello")
-                        cumple = False
-
-            # 🔹 CASO 2: DOS O MÁS SELLOS → ADS
+            lado_min = None
+            
+            if area_cm2 < 30:
+                st.warning("Área < 30 cm² → el rotulado debe realizarse en envase secundario o QR.")
+                cumple = False
+            
             else:
-                if area_cara_cm2 <= 300:
-                    ADS = 0.65 * area_cara_cm2
-                    area_sello = lado_real_cm ** 2
-                    area_total_sellos = area_sello * num_sellos
-
-                    st.write(f"Área disponible para sellos (ADS): {ADS:.2f} cm²")
-                    st.write(f"Área total ocupada por sellos: {area_total_sellos:.2f} cm²")
-
-                    if area_total_sellos <= ADS:
-                        st.success("✅ Cumple criterio de área disponible (ADS 65%)")
-                    else:
-                        st.error("❌ No cumple: los sellos exceden el ADS permitido")
-                        cumple = False
+                if num_sellos > 1:
+                    area_65 = area_cm2 * 0.65
+                    
+                    st.markdown(
+                        f"<div style='background:#f7f7f7;padding:6px;border-radius:6px;'>"
+                        f"<b>Área disponible para sellos (65%):</b> {area_65:.2f} cm²"
+                        f"</div>",
+                        unsafe_allow_html=True
+                    )
+                    
+                    # Tabla 17 aplicada al 65 %
+                    if area_65 < 35: lado_min = 1.7
+                    elif area_65 < 40: lado_min = 1.8
+                    elif area_65 < 50: lado_min = 2.0
+                    elif area_65 < 60: lado_min = 2.2
+                    elif area_65 < 80: lado_min = 2.5
+                    elif area_65 < 100: lado_min = 2.8
+                    elif area_65 < 125: lado_min = 3.1
+                    elif area_65 < 150: lado_min = 3.4
+                    elif area_65 < 200: lado_min = 3.9
+                    elif area_65 < 250: lado_min = 4.4
+                    else: lado_min = 4.8
+                        
+                    st.success(
+                        f"Tamaño mínimo exigido para **cada sello**: {lado_min:.2f} cm"
+                    )
 
                 else:
-                    st.write("Área > 300 cm² → cada sello debe medir **3,9 × 3,9 cm**")
-                    if lado_real_cm >= 3.9:
-                        st.success("✅ Cumple tamaño fijo para múltiples sellos")
-                    else:
-                        st.error("❌ No cumple tamaño fijo (3,9 cm)")
-                        cumple = False
-
+                    if area_cm2 < 35: lado_min = 1.7
+                    elif area_cm2 < 40: lado_min = 1.8
+                    elif area_cm2 < 50: lado_min = 2.0
+                    elif area_cm2 < 60: lado_min = 2.2
+                    elif area_cm2 < 80: lado_min = 2.5
+                    elif area_cm2 < 100: lado_min = 2.8
+                    elif area_cm2 < 125: lado_min = 3.1
+                    elif area_cm2 < 150: lado_min = 3.4
+                    elif area_cm2 < 200: lado_min = 3.9
+                    elif area_cm2 < 250: lado_min = 4.4
+                    else: lado_min = 4.8
+                        
+                    st.success(
+                        f"Tamaño mínimo exigido del sello: {lado_min:.2f} cm"
+                    )
+                lado_real = st.number_input(
+                    "Tamaño real del sello en el arte (cm)",
+                    min_value=0.0,
+                    step=0.1,
+                    key="t17_lado_real"
+                )
+         
+                if lado_real < lado_min:
+                    st.error("❌ No cumple tamaño mínimo del sello")
+                    cumple = False
+                else:
+                    st.success("✅ Cumple tamaño del sello")
             # -------------------------------
             # RESULTADO FINAL
             # -------------------------------
