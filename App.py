@@ -423,7 +423,7 @@ for categoria, items in CATEGORIAS.items():
                 Para verificar la **distribución de los sellos de advertencia**, consultar la  
                 **Resolución 810 de 2021**, apartado **32.5.6 – Formas de distribución**, disponible en el siguiente enlace oficial:
                 
-                🔗 https://www.alcaldiabogota.gov.co/sisjur/normas/Norma1.jsp?i=113678
+                🔗 https://gruposrm.com/Tienda2/3648-thickbox_default/vectores-de-etiquetado-nutricional-colombia.jpg
                 """,
                 unsafe_allow_html=False
             )
