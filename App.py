@@ -203,12 +203,11 @@ for categoria, items in CATEGORIAS.items():
                 | 1 onza fluida (oz fl) | 30 mL |
                 | 1 onza de peso (oz) | 28 g |
                 """)
-
-        st.caption(
-            "ℹ️ Esta tabla se utiliza como referencia para verificar la coherencia de la porción declarada "
-            "en la tabla nutricional. Las medidas caseras deben acompañar siempre a unidades del Sistema Internacional. "
-            "Además, el número de porciones de la tabla debe coincidir con las declaradas en la cara principal (se puede declarar con aprox. o inmediatamente el número según corresponda."
-        )
+                st.caption(
+                    "ℹ️ Esta tabla se utiliza como referencia para verificar la coherencia de la porción declarada "
+                    "en la tabla nutricional. Las medidas caseras deben acompañar siempre a unidades del Sistema Internacional. "
+                    "Además, el número de porciones de la tabla debe coincidir con las declaradas en la cara principal (se puede declarar con aprox. o inmediatamente el número según corresponda."
+                )
 
 
         
